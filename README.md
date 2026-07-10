@@ -6,6 +6,11 @@ everything as CSV at tax season.
 
 Built as a portfolio project at **$0 cost**, using the Firebase free (Spark) plan for auth and database, plus the Cloudinary free tier for images. (Firebase Storage now requires a billing account even for free usage, so images live on Cloudinary instead.)
 
+> **Now a Next.js app.** This was originally plain HTML/CSS/JS with no build step. It has been
+> ported to **Next.js 14 (App Router) + React 18** — same features, same visual system, same
+> Firebase/Cloudinary backend, now componentised with a real build pipeline. The logic that used
+> to live in one `app.js` is split into `lib/` (pure helpers) and `components/` (the UI).
+
 ## Features
 - Google sign-in (each user sees only their own receipts)
 - Back-camera capture on phones (`capture="environment"`)
@@ -16,25 +21,53 @@ Built as a portfolio project at **$0 cost**, using the Firebase free (Spark) pla
 - Export CSV (for taxes) and JSON backup
 
 ## Tech
-Plain HTML/CSS/JS (no build step). Firebase Auth + Firestore. Cloudinary (images). Tesseract.js. Chart.js.
+Next.js 14 (App Router) · React 18 · Firebase Auth + Firestore · Cloudinary (images) · Tesseract.js · Chart.js.
+
+### Project layout
+```
+app/
+  layout.js          root layout + Google fonts (next/font)
+  page.js            "use client" root: auth gate + Firestore subscription
+  globals.css        the visual system (ported from the old styles.css)
+components/
+  Login.js           Google sign-in view
+  AppShell.js        sidebar + tab switching
+  Dashboard.js       stats + Chart.js bar/doughnut
+  Capture.js         camera → OCR → editable form → save
+  Receipts.js        ledger list, search/filter, delete, image modal
+  Export.js          CSV + JSON export
+  ConsentBanner.js   cookie consent
+  Toast.js           toast context/provider
+lib/
+  config.js          firebase + cloudinary keys (public by design)
+  firebase.js        Firebase singletons (app/auth/db)
+  cloudinary.js      unsigned image upload
+  receipt.js         pure helpers: OCR parse, compression, categories, URL safety
+public/
+  privacy.html       static privacy policy
+```
 
 ---
 
 ## Setup (one time, about 10 min, free, no credit card)
 
+The keys committed in `lib/config.js` are **public by design** — Firebase security is enforced by the
+Firestore rules (below), not by hiding the config. To run this under **your own** free accounts,
+replace the values in `lib/config.js` and follow the steps below.
+
 ### 1. Create a Firebase project
 1. Go to <https://console.firebase.google.com>, click **Add project**, name it, and create it.
-2. In the project, click the **`</>` (Web)** icon to register a web app, give it a nickname, then **Register**.
-3. Firebase shows a `firebaseConfig = { ... }` object. Copy those values into **`firebase-config.js`**.
+2. Click the **`</>` (Web)** icon to register a web app, give it a nickname, then **Register**.
+3. Firebase shows a `firebaseConfig = { ... }` object. Copy those values into **`lib/config.js`**.
 
 ### 2. Turn on Authentication + Firestore
 - **Authentication**: Get started, open Sign-in method, enable **Google**, then Save.
 - **Firestore Database**: Create database, choose **Production mode**, pick a region.
-- Skip **Storage**. It now requires a billing (Blaze) plan even for free usage, so images are handled by Cloudinary instead (step 3 below).
+- Skip **Storage** — it now requires a billing (Blaze) plan even for free usage, so images go to Cloudinary (step 3).
 
 ### 3. Create a free Cloudinary account (for receipt images)
 1. Visit <https://cloudinary.com/users/register/free> and sign up. No card required.
-2. The dashboard shows your **Cloud name** at the top. Paste it into `cloudinaryConfig.cloudName` in `firebase-config.js`.
+2. The dashboard shows your **Cloud name** at the top. Paste it into `cloudinaryConfig.cloudName` in `lib/config.js`.
 3. Open Settings (gear icon), go to the **Upload** tab, scroll to **Upload presets**, then **Add upload preset**.
 4. Set **Signing Mode** to **Unsigned** and Save.
 5. Copy that preset's name into `cloudinaryConfig.uploadPreset`.
@@ -43,9 +76,8 @@ Free tier: 25GB storage plus bandwidth, well beyond family use.
 
 ### 4. Paste Firestore security rules (so each user only touches their own data)
 
-**Firestore** (Firestore, then Rules). These rules bind every document to its owner
-and validate the shape and size of each field on create. Documents are immutable
-(no `update` rule), so validation only has to run at creation time:
+In **Firestore → Rules**. These bind every document to its owner and validate the shape and size of
+each field on create. Documents are immutable (no `update` rule), so validation only runs at creation:
 ```
 rules_version = '2';
 service cloud.firestore {
@@ -81,73 +113,65 @@ service cloud.firestore {
 }
 ```
 
-> Why these are stronger than the minimal version: the original rules let a
-> signed-in user write **any** shape of document (arbitrary field names, huge
-> strings, negative or non-numeric amounts, an `imgUrl` pointing anywhere). The
-> hardened rules pin the exact field set, enforce types and length caps, cap the
-> amount, force `imgUrl` to a Cloudinary https URL, and stamp `createdAt` with
-> the server time. `read`/`delete` were already correctly scoped to the owner's
-> `uid`, so cross-user access was never possible.
-
 ### 5. Authorize your domains
-In Authentication, open **Settings**, then **Authorized domains**, and add:
+In Authentication → **Settings → Authorized domains**, add:
 - `localhost` (already there, for local testing)
-- `YOURNAME.github.io` (your GitHub Pages domain)
+- your production domain (e.g. `your-app.vercel.app`)
 
 ---
 
 ## Run locally
-Google sign-in needs `http://localhost` (not `file://`). From this folder:
 ```
-python3 -m http.server 5173
+npm install
+npm run dev
 ```
-Open <http://localhost:5173>.
+Open <http://localhost:5173>. (Google sign-in needs `http://localhost`, not `file://` — Next's dev
+server handles that.)
 
-## Deploy (GitHub Pages, free)
-1. Create a new GitHub repo and upload this folder's files.
-2. In the repo, open Settings, then Pages, and set Source to the `main` branch, `/root`, then Save.
-3. Wait about a minute. The site goes live at `https://YOURNAME.github.io/repo-name/`.
-4. Make sure that domain is in Firebase **Authorized domains** (step 4 above).
+## Build / deploy
+```
+npm run build   # production build
+npm start        # serve the production build on :5173
+```
+
+**Deploy (Vercel, free):** import the repo at <https://vercel.com/new>. Vercel auto-detects Next.js
+(`vercel.json` sets `"framework": "nextjs"`); no config needed. Add your production domain to
+Firebase **Authorized domains** afterwards.
 
 ## Security hardening
 
-- **Cloudinary unsigned uploads:** the cloud name + preset are public, so anyone
-  can POST images to the preset (spam, storage/bandwidth exhaustion, hosting
-  arbitrary images under your account). In the preset settings, restrict to a
-  dedicated folder, set **Allowed formats** to `jpg,png,webp`, cap **Max file
-  size** and image dimensions, and enable **moderation**. For a real deployment,
-  move to **signed uploads** via a small serverless function so the browser
-  never holds upload authority. Note: deleted receipts leave their image behind
-  (no delete without a secret key client-side) - acceptable at family scale but
-  a retention/privacy item to document.
-- **Content-Security-Policy:** the app ships without a CSP. Prefer setting it as
-  a response header at the host; a `<meta>` tag works for GitHub Pages. A CSP
-  that fits the current CDNs (test Google sign-in popups before enforcing):
+- **Cloudinary unsigned uploads:** the cloud name + preset are public, so anyone can POST images to
+  the preset (spam, storage/bandwidth exhaustion, hosting arbitrary images under the account). In the
+  preset settings, restrict to a dedicated folder, set **Allowed formats** to `jpg,png,webp`, cap
+  **Max file size** and image dimensions, and enable **moderation**. For a real deployment, move to
+  **signed uploads** via a Next.js API route (`app/api/sign/route.js`) so the browser never holds
+  upload authority. Deleted receipts leave their image behind (no client-side delete without a secret
+  key) — acceptable at family scale, a retention/privacy item to document.
+- **Content-Security-Policy + headers:** add a CSP and hardening headers at the host. With Next on
+  Vercel, set them in `next.config.mjs` under `async headers()` (or `vercel.json`). A CSP that fits
+  the current dependencies:
   ```
   default-src 'self';
-  script-src 'self' https://cdn.jsdelivr.net https://www.gstatic.com https://apis.google.com;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval';
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
-  img-src 'self' data: blob: https://res.cloudinary.com https://*.googleusercontent.com https://lh3.googleusercontent.com;
-  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://api.cloudinary.com https://cdn.jsdelivr.net;
+  img-src 'self' data: blob: https://res.cloudinary.com https://*.googleusercontent.com;
+  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://api.cloudinary.com;
   worker-src 'self' blob:;
-  frame-src https://reciept-vault-6f2af.firebaseapp.com https://*.firebaseapp.com;
+  frame-src https://*.firebaseapp.com;
   object-src 'none'; base-uri 'self';
   ```
-  Tesseract.js needs `worker-src blob:` and `img-src blob:`; Chart.js is covered
-  by `script-src` jsdelivr; Firebase auth popups need the `frame-src`/`connect-src`
-  Google origins. Add other recommended headers at the host too:
-  `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`,
-  `X-Frame-Options: DENY` (or `frame-ancestors 'none'` in the CSP).
-- **Subresource Integrity (SRI):** the Tesseract.js and Chart.js `<script>` tags
-  have no `integrity` hash, so a compromised CDN could serve altered code. Pin
-  exact versions and add `integrity="sha384-..." crossorigin="anonymous"` to
-  those two tags. The Firebase SDK is imported as ES modules from gstatic and the
-  Tesseract worker/wasm are fetched dynamically, so SRI cannot cover those; rely
-  on the CSP allow-list for them.
+  (Next's runtime needs `'unsafe-inline'`/`'unsafe-eval'` in `script-src` unless you wire up a nonce.)
+  Also add `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`.
+- **Bundled dependencies:** Chart.js, Tesseract.js and the Firebase SDK are now installed via npm and
+  bundled by Next, not pulled from a CDN at runtime — so the old Subresource-Integrity concern for
+  `<script>` CDN tags no longer applies. Keep versions pinned and run `npm audit` periodically.
 
 ## Notes and limits
 - OCR accuracy on crumpled or faded receipts is about 70 to 85 percent, which is why every field stays editable before save.
 - Free tier: 50k Firestore reads per day, 25GB Cloudinary storage, well beyond a family's use.
-- Client config keys in `firebase-config.js` are meant to be public. Security comes from the Firestore rules above.
-- Deleting a receipt removes its Firestore record. The Cloudinary image stays stored (unsigned uploads cannot be deleted without exposing a secret key client-side), which is a non-issue at this scale given the 25GB free tier.
+- Client config keys in `lib/config.js` are meant to be public. Security comes from the Firestore rules above.
+- The receipt list loads a user's whole collection into memory (fine at family scale). For thousands of
+  receipts, add Firestore pagination (`limit` + `startAfter`).
+- Deleting a receipt removes its Firestore record; the Cloudinary image stays stored (unsigned uploads
+  cannot be deleted without exposing a secret key client-side), a non-issue at this scale on the 25GB free tier.
