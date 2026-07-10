@@ -486,3 +486,42 @@ function initConsent(){
   $("consentEssential").onclick = ()=> decide("essential");
 }
 initConsent();
+
+// ─────────────────────────────────────────────────────────────
+// LOGIN PARALLAX + 3D TILT
+// Pointer moves the card in 3D and shifts the floating layers behind it for
+// real depth. Throttled with requestAnimationFrame, transform-only, and it
+// stays off for touch devices and anyone who prefers reduced motion.
+// ─────────────────────────────────────────────────────────────
+(function initLoginParallax(){
+  const scene = $("loginScene"), card = $("loginCard");
+  if (!scene || !card) return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine   = window.matchMedia("(pointer: fine)").matches;
+  if (reduce || !fine) return;
+
+  const depth = scene.querySelector(".depth");
+  let tx = 0, ty = 0, raf = null;
+
+  function apply(){
+    raf = null;
+    card.style.setProperty("--ry", (tx * 9).toFixed(2) + "deg");
+    card.style.setProperty("--rx", (-ty * 9).toFixed(2) + "deg");
+    if (depth){
+      depth.style.setProperty("--px", (tx * 26).toFixed(1) + "px");
+      depth.style.setProperty("--py", (ty * 26).toFixed(1) + "px");
+    }
+  }
+  scene.addEventListener("pointermove", (e)=>{
+    const r = scene.getBoundingClientRect();
+    tx = (e.clientX - r.left) / r.width  - 0.5;   // -0.5 .. 0.5
+    ty = (e.clientY - r.top)  / r.height - 0.5;
+    if (!raf) raf = requestAnimationFrame(apply);
+  });
+  scene.addEventListener("pointerleave", ()=>{
+    tx = ty = 0;
+    card.style.setProperty("--ry", "0deg");
+    card.style.setProperty("--rx", "0deg");
+    if (depth){ depth.style.setProperty("--px", "0px"); depth.style.setProperty("--py", "0px"); }
+  });
+})();
