@@ -1,3 +1,7 @@
 {
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "rewrites": [
+    { "source": "/__/auth/:path*", "destination": "https://reciept-vault-6f2af.firebaseapp.com/__/auth/:path*" },
+    { "source": "/__/firebase/:path*", "destination": "https://reciept-vault-6f2af.firebaseapp.com/__/firebase/:path*" }
+  ]
 }
