@@ -318,59 +318,65 @@ function renderList(){
   const list = $("receiptList");
   $("emptyState").classList.toggle("hidden", receipts.length>0);
 
-  // Build the list with DOM APIs (textContent / setAttribute) instead of
+  // Build ledger rows with DOM APIs (textContent / setAttribute) instead of
   // innerHTML interpolation. This makes it impossible for any receipt field
   // to break out of an attribute or inject an element, regardless of content.
   list.textContent = "";
   const frag = document.createDocumentFragment();
   filtered.forEach(r=>{
-    const card = document.createElement("div");
-    card.className = "receipt-card";
+    const row = document.createElement("div");
+    row.className = "row";
 
-    const img = document.createElement("img");
+    // Store cell: small thumbnail + name
+    const store = document.createElement("div");
+    store.className = "cell store";
     const src = safeImageUrl(r.imgUrl);
     if (src){
+      const img = document.createElement("img");
+      img.className = "thumb";
       img.src = src;
-      img.dataset.full = src;
+      img.alt = String(r.brand ?? "");
       img.onclick = ()=>openModal(src);
+      store.appendChild(img);
+    } else {
+      const ph = document.createElement("span");
+      ph.className = "thumb thumb-empty";
+      store.appendChild(ph);
     }
-    img.alt = String(r.brand ?? "");
-    card.appendChild(img);
+    const name = document.createElement("span");
+    name.className = "name";
+    name.textContent = r.brand || "Unknown";
+    store.appendChild(name);
+    row.appendChild(store);
 
-    const body = document.createElement("div");
-    body.className = "rc-body";
+    const cat = document.createElement("div");
+    cat.className = "cell cat";
+    const chip = document.createElement("span");
+    chip.className = "tag";
+    chip.textContent = r.category || "Other";
+    cat.appendChild(chip);
+    row.appendChild(cat);
 
-    const brand = document.createElement("div");
-    brand.className = "rc-brand";
-    brand.textContent = r.brand || "Unknown";
-    body.appendChild(brand);
-
-    const catEl = document.createElement("span");
-    catEl.className = "rc-cat";
-    catEl.textContent = r.category || "Other";
-    body.appendChild(catEl);
-
-    const foot = document.createElement("div");
-    foot.className = "rc-foot";
-    const amount = document.createElement("span");
-    amount.className = "rc-amount";
-    amount.textContent = money(r.amount);
-    const date = document.createElement("span");
-    date.className = "rc-date";
+    const date = document.createElement("div");
+    date.className = "cell date";
     date.textContent = r.date || "";
-    foot.appendChild(amount);
-    foot.appendChild(date);
-    body.appendChild(foot);
+    row.appendChild(date);
 
-    card.appendChild(body);
+    const amount = document.createElement("div");
+    amount.className = "cell amt num";
+    amount.textContent = money(r.amount);
+    row.appendChild(amount);
 
+    const act = document.createElement("div");
+    act.className = "cell act";
     const del = document.createElement("button");
-    del.className = "rc-del";
-    del.textContent = "Delete";
+    del.className = "del";
+    del.textContent = "Remove";
     del.onclick = ()=>removeReceipt(r.id);
-    card.appendChild(del);
+    act.appendChild(del);
+    row.appendChild(act);
 
-    frag.appendChild(card);
+    frag.appendChild(row);
   });
   list.appendChild(frag);
 }
@@ -403,14 +409,14 @@ function renderCharts(){
   receipts.forEach(r=>{ catTotals[r.category||"Other"]=(catTotals[r.category||"Other"]||0)+r.amount; });
   const catLabels=Object.keys(catTotals), catVals=Object.values(catTotals);
 
-  const gridColor="#232329", tick="#7e7a72";
-  // A restrained, gold-forward palette to match the app's visual system.
-  const palette=["#c8a45c","#e0c690","#9c7d3f","#b7b3aa","#8a6f3a",
-    "#d8c290","#6f5a2e","#cbb888","#7e7a72","#a88c4c","#5c4a26"];
+  const gridColor="#e3dfd6", tick="#8b897f";
+  // A quiet monochrome ramp (charcoal to warm grey) to match the minimal theme.
+  const palette=["#1b1b1a","#3f3d39","#5c5a54","#78756d","#948f85",
+    "#aca79b","#c2bcae","#d2ccbe","#8b897f","#4c4a46","#6b6860"];
   if (monthlyChart) monthlyChart.destroy();
   monthlyChart = new Chart($("monthlyChart"),{
     type:"bar",
-    data:{labels:months,datasets:[{data:sums,backgroundColor:"#c8a45c",borderRadius:5}]},
+    data:{labels:months,datasets:[{data:sums,backgroundColor:"#1b1b1a",borderRadius:5}]},
     options:{plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false},ticks:{color:tick}},
         y:{grid:{color:gridColor},ticks:{color:tick}}}}
@@ -419,7 +425,7 @@ function renderCharts(){
   categoryChart = new Chart($("categoryChart"),{
     type:"doughnut",
     data:{labels:catLabels,datasets:[{data:catVals,backgroundColor:palette,
-      borderColor:"#111114",borderWidth:2}]},
+      borderColor:"#f7f5f1",borderWidth:2}]},
     options:{cutout:"62%",plugins:{legend:{position:"bottom",labels:{color:tick,boxWidth:11,font:{size:11}}}}}
   });
 }
@@ -486,42 +492,3 @@ function initConsent(){
   $("consentEssential").onclick = ()=> decide("essential");
 }
 initConsent();
-
-// ─────────────────────────────────────────────────────────────
-// LOGIN PARALLAX + 3D TILT
-// Pointer moves the card in 3D and shifts the floating layers behind it for
-// real depth. Throttled with requestAnimationFrame, transform-only, and it
-// stays off for touch devices and anyone who prefers reduced motion.
-// ─────────────────────────────────────────────────────────────
-(function initLoginParallax(){
-  const scene = $("loginScene"), card = $("loginCard");
-  if (!scene || !card) return;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const fine   = window.matchMedia("(pointer: fine)").matches;
-  if (reduce || !fine) return;
-
-  const depth = scene.querySelector(".depth");
-  let tx = 0, ty = 0, raf = null;
-
-  function apply(){
-    raf = null;
-    card.style.setProperty("--ry", (tx * 9).toFixed(2) + "deg");
-    card.style.setProperty("--rx", (-ty * 9).toFixed(2) + "deg");
-    if (depth){
-      depth.style.setProperty("--px", (tx * 26).toFixed(1) + "px");
-      depth.style.setProperty("--py", (ty * 26).toFixed(1) + "px");
-    }
-  }
-  scene.addEventListener("pointermove", (e)=>{
-    const r = scene.getBoundingClientRect();
-    tx = (e.clientX - r.left) / r.width  - 0.5;   // -0.5 .. 0.5
-    ty = (e.clientY - r.top)  / r.height - 0.5;
-    if (!raf) raf = requestAnimationFrame(apply);
-  });
-  scene.addEventListener("pointerleave", ()=>{
-    tx = ty = 0;
-    card.style.setProperty("--ry", "0deg");
-    card.style.setProperty("--rx", "0deg");
-    if (depth){ depth.style.setProperty("--px", "0px"); depth.style.setProperty("--py", "0px"); }
-  });
-})();
