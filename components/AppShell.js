@@ -32,7 +32,7 @@ export default function AppShell({ user, receipts }) {
           ))}
         </nav>
         <div className="side-user">
-          {user.photoURL && <img src={user.photoURL} alt="" />}
+          {user.photoURL && <img src={user.photoURL} alt="" referrerPolicy="no-referrer" />}
           <div className="side-user-meta">
             <span>{user.displayName || user.email}</span>
             <button className="link-btn" onClick={() => signOut(auth)}>Sign out</button>
