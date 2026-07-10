@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { useToast } from "./Toast";
