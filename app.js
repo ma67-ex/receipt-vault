@@ -241,6 +241,7 @@ $("receiptForm").onsubmit = async (e)=>{
     resetCapture();
     document.querySelector('.nav-item[data-tab="receipts"]').click();
   } catch(err){
+    console.error("Save failed:", err);
     toast("Save failed: "+err.message);
   } finally {
     saveBtn.disabled=false; saveBtn.textContent="Save receipt";
@@ -260,13 +261,16 @@ function resetCapture(){
 // LIVE RECEIPTS (Firestore realtime)
 // ─────────────────────────────────────────────────────────────
 function watchReceipts(){
-  const q = query(collection(db,"receipts"),
-    where("uid","==",currentUser.uid), orderBy("date","desc"));
+  // Filter by owner only (a single-field query needs no composite index),
+  // then sort newest-first in the browser. Keeps setup zero-config.
+  const q = query(collection(db,"receipts"), where("uid","==",currentUser.uid));
   unsub = onSnapshot(q, (snap)=>{
     receipts = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+    receipts.sort((a,b)=> String(b.date||"").localeCompare(String(a.date||"")));
     renderAll();
   }, (err)=>{
-    toast("Load error: "+err.message);
+    console.error("Firestore load error:", err);
+    toast("Could not load receipts: "+err.message);
   });
 }
 
