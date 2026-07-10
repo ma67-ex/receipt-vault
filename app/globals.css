@@ -1,0 +1,391 @@
+/* ======================================================================
+   Receipt Vault visual system
+   Minimal, light, and quiet. A warm off-white ground, near-black ink,
+   one restrained type system, hairline rules, and only whisper-light motion.
+   ====================================================================== */
+
+:root{
+  --bg:#eceae4;         /* page: warm, soft off-white (never glaring) */
+  --bg-2:#f1efe9;       /* slightly raised ground */
+  --surface:#f7f5f1;    /* cards and panels */
+  --surface-2:#efece5;  /* inputs, chips */
+  --line:#dcd8cf;       /* hairline borders */
+  --line-soft:#e3dfd6;  /* softer dividers */
+  --ink:#1b1b1a;        /* primary text, near-black */
+  --text:#1b1b1a;
+  --text-2:#4c4a46;     /* secondary text */
+  --muted:#8b897f;      /* tertiary / labels */
+  --accent:#1b1b1a;     /* the accent IS the ink: black on off-white */
+  --hair:#c9c4b8;       /* stronger hairline for emphasis rules */
+  --danger:#a4443f;
+  --radius:12px;
+  --radius-lg:18px;
+  --serif:var(--font-serif), "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans:var(--font-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --shadow:0 20px 50px -34px rgba(28,26,22,.45);
+  --shadow-soft:0 10px 30px -24px rgba(28,26,22,.4);
+}
+
+*{box-sizing:border-box; margin:0; padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  letter-spacing:.1px;
+}
+.hidden{display:none !important}
+::selection{background:rgba(27,27,26,.12)}
+
+h1,h2,h3{font-family:var(--serif); font-weight:600; letter-spacing:.2px; color:var(--ink)}
+
+.wordmark{font-family:var(--serif); font-weight:600; letter-spacing:.5px}
+.wordmark .vault{color:var(--muted)}
+
+/* ======================================================================
+   AUTH SPLASH
+   ====================================================================== */
+.auth-splash{
+  position:fixed; inset:0; z-index:100;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
+  background:var(--bg);
+}
+.auth-splash .brand-mark{
+  font-family:var(--serif); font-size:15px; letter-spacing:5px;
+  text-transform:uppercase; color:var(--muted);
+}
+
+/* ======================================================================
+   LOGIN
+   ====================================================================== */
+.login-view{
+  min-height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:32px 24px;
+  background:var(--bg);
+}
+.login-card{
+  position:relative;
+  background:transparent; border:none; box-shadow:none;
+  padding:0;
+  max-width:452px; width:100%;
+  text-align:center;
+  animation:rise .7s cubic-bezier(.16,1,.3,1) both;
+}
+/* a small ink tick as the only ornament: an editorial signature */
+.login-card:before{
+  content:""; display:block; width:34px; height:2px;
+  background:var(--ink); border-radius:2px; margin:0 auto 28px;
+}
+.brand-mark{
+  font-family:var(--serif);
+  font-size:13px; letter-spacing:4.5px; text-transform:uppercase;
+  color:var(--muted); margin-bottom:26px;
+}
+.login-card h1{
+  font-size:44px; line-height:1.04; margin-bottom:18px; letter-spacing:.3px;
+}
+.tagline{color:var(--text-2); line-height:1.7; margin-bottom:32px; font-size:15px}
+.google-btn{
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  width:100%; padding:15px;
+  background:var(--ink); color:var(--bg-2);
+  border:none; border-radius:10px;
+  font-family:var(--sans); font-size:14.5px; font-weight:600; letter-spacing:.2px; cursor:pointer;
+  transition:transform .18s ease, opacity .18s ease;
+}
+.google-btn:hover{transform:translateY(-1px); opacity:.92}
+.google-btn:active{transform:translateY(0)}
+.google-btn svg{background:#fff; border-radius:3px; padding:1px}
+.fineprint{color:var(--muted); font-size:12.5px; margin-top:20px}
+.login-links{margin-top:12px; font-size:12.5px}
+.login-links a{color:var(--text-2); text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--hair)}
+.login-links a:hover{color:var(--ink)}
+.login-foot{color:var(--muted); font-size:12px; margin-top:32px}
+
+/* ======================================================================
+   APP SHELL
+   ====================================================================== */
+.app-view{display:flex; min-height:100%}
+.sidebar{
+  width:248px; flex-shrink:0;
+  background:var(--bg-2);
+  border-right:1px solid var(--line-soft);
+  display:flex; flex-direction:column;
+  padding:28px 16px;
+  position:sticky; top:0; height:100vh;
+}
+.side-brand{
+  font-family:var(--serif); font-size:21px; font-weight:600;
+  padding:6px 12px 24px; letter-spacing:.3px; color:var(--ink);
+}
+.side-brand .vault{color:var(--muted)}
+.side-nav{display:flex; flex-direction:column; gap:2px; flex:1}
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  background:none; border:none; color:var(--muted);
+  font-family:var(--sans); font-size:14.5px; text-align:left;
+  padding:12px 14px; border-radius:9px; cursor:pointer;
+  transition:background .16s, color .16s;
+}
+.nav-item:hover{background:var(--surface); color:var(--ink)}
+.nav-item.active{
+  background:var(--surface); color:var(--ink); font-weight:500;
+  box-shadow:inset 2px 0 0 var(--ink);
+}
+.side-user{
+  display:flex; align-items:center; gap:11px;
+  padding:16px 10px 4px; border-top:1px solid var(--line-soft); margin-top:12px;
+}
+.side-user img{width:38px; height:38px; border-radius:50%; background:var(--surface-2); object-fit:cover}
+.side-user-meta{display:flex; flex-direction:column; font-size:13px; overflow:hidden}
+.side-user-meta span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:132px; color:var(--ink)}
+.link-btn{
+  background:none; border:none; color:var(--muted);
+  font-family:var(--sans); font-size:12.5px; cursor:pointer;
+  padding:2px 0; text-align:left;
+}
+.link-btn:hover{color:var(--ink)}
+.menu-btn{
+  display:none; position:fixed; top:16px; left:16px; z-index:40;
+  background:var(--surface); color:var(--ink); border:1px solid var(--line);
+  height:44px; padding:0 16px; border-radius:10px; cursor:pointer;
+  font-family:var(--sans); font-size:12px; font-weight:600;
+  letter-spacing:1.4px; text-transform:uppercase;
+}
+
+.content{flex:1; padding:52px 56px; max-width:1120px; width:100%}
+.content h2{font-size:34px; letter-spacing:.2px; margin-bottom:8px}
+.section-lead{color:var(--text-2); font-size:15px; line-height:1.6; max-width:620px; margin-bottom:34px}
+.tab{display:none; animation:fade .3s ease}
+.tab.active{display:block}
+.hint{color:var(--text-2); font-size:14px; line-height:1.65; margin-bottom:22px; max-width:640px}
+
+/* ======================================================================
+   STATS + PANELS
+   ====================================================================== */
+/* Figures strip: big numbers divided by hairlines, no boxes */
+.figures{
+  display:flex;
+  border-top:1px solid var(--hair); border-bottom:1px solid var(--hair);
+  margin:4px 0 44px;
+}
+.fig{flex:1; padding:28px 6px 26px}
+.fig + .fig{border-left:1px solid var(--line-soft)}
+.fig-k{
+  display:block; font-size:11px; letter-spacing:1.6px; text-transform:uppercase;
+  color:var(--muted); margin-bottom:16px;
+}
+.fig-v{
+  font-family:var(--serif); font-size:46px; font-weight:600;
+  letter-spacing:.4px; color:var(--ink); line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+/* Charts: borderless, a ruled label above each */
+.charts{display:grid; grid-template-columns:1.5fr 1fr; gap:52px}
+.chart h3{
+  font-family:var(--sans); font-size:11px; font-weight:600;
+  letter-spacing:1.6px; text-transform:uppercase; color:var(--muted);
+  margin-bottom:22px; padding-bottom:14px; border-bottom:1px solid var(--line-soft);
+}
+.chart-box{height:264px; position:relative}
+.chart-box canvas{max-height:264px}
+
+/* ======================================================================
+   CAPTURE
+   ====================================================================== */
+.capture-drop{
+  display:block; border:1px dashed var(--hair);
+  border-radius:var(--radius); padding:0; min-height:240px;
+  cursor:pointer; overflow:hidden; position:relative;
+  background:var(--surface); transition:border-color .2s, background .2s;
+}
+.capture-drop:hover{border-color:var(--ink); background:var(--bg-2)}
+#dropInner{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:12px; min-height:240px; color:var(--muted);
+}
+.drop-frame{
+  width:52px; height:52px; border:1px solid var(--line);
+  border-radius:10px; display:flex; align-items:center; justify-content:center;
+  color:var(--ink); font-family:var(--serif); font-size:24px;
+}
+#dropInner span{font-size:14px; letter-spacing:.2px}
+.preview-img{width:100%; max-height:460px; object-fit:contain; display:block; background:#fff}
+.ocr-status{display:flex; align-items:center; gap:11px; color:var(--text-2); margin:22px 0; font-size:14px}
+.spinner{
+  width:15px; height:15px; border:2px solid var(--line);
+  border-top-color:var(--ink); border-radius:50%;
+  animation:spin .7s linear infinite; display:inline-block;
+}
+
+.receipt-form{margin-top:26px; display:grid; grid-template-columns:1fr 1fr; gap:20px; max-width:660px}
+.receipt-form label{display:flex; flex-direction:column; gap:8px; font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted)}
+.receipt-form input, .receipt-form select,
+.filter-row input, .filter-row select{
+  background:#fff; border:1px solid var(--line);
+  border-radius:9px; padding:12px 13px;
+  color:var(--ink); font-family:var(--sans); font-size:15px; letter-spacing:.2px;
+  text-transform:none;
+}
+.receipt-form input:focus, .receipt-form select:focus,
+.filter-row input:focus, .filter-row select:focus{
+  outline:none; border-color:var(--ink); box-shadow:0 0 0 3px rgba(27,27,26,.06);
+}
+.form-actions{grid-column:1/-1; display:flex; gap:12px; justify-content:flex-end; margin-top:4px}
+
+.primary-btn{
+  background:var(--ink); color:var(--bg-2); border:none; border-radius:9px;
+  padding:12px 26px; font-family:var(--sans); font-size:14px; font-weight:600;
+  letter-spacing:.3px; cursor:pointer; transition:opacity .16s, transform .16s;
+}
+.primary-btn:hover{opacity:.92; transform:translateY(-1px)}
+.primary-btn:active{transform:translateY(0)}
+.primary-btn:disabled{opacity:.4; cursor:not-allowed; transform:none}
+.ghost-btn{
+  background:transparent; color:var(--ink); border:1px solid var(--line);
+  border-radius:9px; padding:12px 26px; font-family:var(--sans);
+  font-size:14px; letter-spacing:.3px; cursor:pointer; transition:border-color .16s;
+}
+.ghost-btn:hover{border-color:var(--ink)}
+
+/* ======================================================================
+   RECEIPTS
+   ====================================================================== */
+.filter-row{display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap}
+.filter-row input{flex:1; min-width:190px}
+/* Ledger: hairline-ruled rows, like a statement. No cards. */
+.ledger{border-top:1px solid var(--hair)}
+.ledger-head, .row{
+  display:grid;
+  grid-template-columns:2.3fr 1.2fr 1fr 0.9fr 0.7fr;
+  align-items:center; gap:18px;
+}
+.ledger-head{
+  padding:12px 8px; font-size:10.5px; letter-spacing:1.4px; text-transform:uppercase;
+  color:var(--muted); border-bottom:1px solid var(--line);
+}
+.ledger-head .num, .row .num{text-align:right}
+.row{padding:15px 8px; border-bottom:1px solid var(--line-soft); transition:background .15s}
+.row:hover{background:var(--bg-2)}
+.cell{min-width:0; font-size:14px; color:var(--text)}
+.cell.store{display:flex; align-items:center; gap:15px}
+.thumb{
+  width:46px; height:46px; border-radius:8px; object-fit:cover;
+  background:#fff; border:1px solid var(--line); cursor:zoom-in; flex-shrink:0;
+}
+.thumb-empty{cursor:default; background:var(--surface-2)}
+.name{
+  font-family:var(--serif); font-size:19px; font-weight:600; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.cell.cat .tag{
+  display:inline-block; font-size:10.5px; letter-spacing:.8px; text-transform:uppercase;
+  color:var(--text-2); background:var(--surface-2); border:1px solid var(--line-soft);
+  padding:4px 11px; border-radius:20px;
+}
+.cell.date{font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
+.cell.amt{font-family:var(--serif); font-size:19px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums}
+.cell.act{text-align:right}
+.del{
+  background:none; border:none; color:var(--muted);
+  font-family:var(--sans); font-size:12px; letter-spacing:.4px; cursor:pointer;
+  opacity:0; transition:opacity .15s, color .15s;
+}
+.row:hover .del{opacity:1}
+.del:hover{color:var(--danger)}
+.empty-state{color:var(--muted); text-align:center; padding:72px 0; font-size:15px}
+
+.export-row{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:16px}
+
+/* ======================================================================
+   MODAL + TOAST
+   ====================================================================== */
+.img-modal{
+  position:fixed; inset:0; background:rgba(24,22,18,.78); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center; z-index:60; padding:26px;
+}
+.img-modal img{max-width:100%; max-height:100%; border-radius:10px; box-shadow:var(--shadow)}
+#imgModalClose{
+  position:absolute; top:22px; right:26px; background:var(--surface); color:var(--ink);
+  border:1px solid var(--line); height:40px; padding:0 20px; border-radius:22px;
+  font-family:var(--sans); font-size:12px; font-weight:600;
+  letter-spacing:1.4px; text-transform:uppercase; cursor:pointer;
+}
+#imgModalClose:hover{border-color:var(--ink)}
+.toast{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%);
+  background:var(--ink); border:1px solid var(--ink);
+  color:var(--bg-2); padding:13px 22px; border-radius:10px; z-index:70;
+  box-shadow:var(--shadow); font-size:14px; animation:fade .2s ease;
+}
+
+/* ======================================================================
+   COOKIE / CONSENT BANNER
+   ====================================================================== */
+.consent{
+  position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
+  width:min(680px, calc(100% - 32px));
+  background:var(--surface);
+  border:1px solid var(--line); border-radius:14px;
+  padding:20px 22px; z-index:90; box-shadow:var(--shadow);
+  display:flex; gap:20px; align-items:center; flex-wrap:wrap;
+  animation:rise .4s ease;
+}
+.consent-text{flex:1; min-width:240px}
+.consent-text b{font-family:var(--serif); font-size:17px; font-weight:600; display:block; margin-bottom:6px; color:var(--ink)}
+.consent-text p{color:var(--text-2); font-size:13px; line-height:1.6}
+.consent-text a{color:var(--ink); text-decoration:underline; text-underline-offset:2px}
+.consent-actions{display:flex; gap:10px; flex-shrink:0}
+.consent-actions button{
+  font-family:var(--sans); font-size:13.5px; letter-spacing:.3px;
+  padding:11px 18px; border-radius:9px; cursor:pointer; border:1px solid var(--line);
+}
+.btn-essential{background:transparent; color:var(--ink)}
+.btn-essential:hover{border-color:var(--ink)}
+.btn-accept{background:var(--ink); color:var(--bg-2); border-color:var(--ink); font-weight:600}
+.btn-accept:hover{opacity:.92}
+
+/* ======================================================================
+   MOTION (whisper-light) + RESPONSIVE
+   ====================================================================== */
+@keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
+@keyframes rise{from{opacity:0; transform:translateY(16px)}to{opacity:1; transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:860px){
+  .sidebar{position:fixed; left:0; top:0; z-index:50; transform:translateX(-100%); transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .menu-btn{display:block}
+  .content{padding:78px 20px 44px}
+  .charts{grid-template-columns:1fr; gap:36px}
+  .receipt-form{grid-template-columns:1fr}
+  .login-card h1{font-size:38px}
+  .consent{flex-direction:column; align-items:flex-start}
+  .consent-actions{width:100%}
+  .consent-actions button{flex:1}
+}
+
+/* figures strip and ledger reflow for narrow screens */
+@media(max-width:760px){
+  .figures{flex-direction:column}
+  .fig{padding:22px 4px}
+  .fig + .fig{border-left:none; border-top:1px solid var(--line-soft)}
+  .fig-v{font-size:40px}
+
+  .ledger-head{display:none}
+  .row{grid-template-columns:1fr auto; column-gap:14px; row-gap:8px; padding:18px 4px; align-items:start}
+  .cell.store{grid-column:1; grid-row:1}
+  .cell.amt{grid-column:2; grid-row:1; text-align:right}
+  .cell.cat{grid-column:1; grid-row:2; justify-self:start}
+  .cell.date{grid-column:2; grid-row:2; text-align:right; align-self:center}
+  .cell.act{grid-column:1 / -1; grid-row:3}
+  .del{opacity:1}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .login-card, .stat-card, .receipt-card, .consent, .tab{animation:none !important}
+  *{transition:none !important}
+}
