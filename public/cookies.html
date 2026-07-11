@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08080a" />
+  <title>Cookie Policy · Receipt Vault</title>
+  <meta name="description" content="Which cookies and local storage Receipt Vault uses, why, and how to change your choice." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#08080a;
+      --bg-2:#0d0d10;
+      --surface:#111114;
+      --border:#232329;
+      --text:#ece9e3;
+      --text-2:#b7b3aa;
+      --muted:#7e7a72;
+      --gold:#c8a45c;
+      --gold-soft:#e0c690;
+    }
+    *{box-sizing:border-box;}
+    html{-webkit-text-size-adjust:100%;}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      font-size:16px;
+      line-height:1.75;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(200,164,92,0.28);}
+    a:hover{color:var(--gold-soft);border-bottom-color:rgba(224,198,144,0.6);}
+    a:focus-visible{outline:2px solid var(--gold-soft);outline-offset:3px;border-radius:2px;}
+
+    .topbar{
+      max-width:740px;
+      margin:0 auto;
+      padding:28px 24px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .wordmark{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.35rem;
+      letter-spacing:0.3px;
+      color:var(--text);
+    }
+    .wordmark .vault{color:var(--gold);}
+    .backlink{
+      font-size:0.9rem;
+      color:var(--text-2);
+      border-bottom-color:transparent;
+    }
+    .backlink:hover{color:var(--gold-soft);}
+
+    .wrap{
+      max-width:740px;
+      margin:0 auto;
+      padding:64px 24px 48px;
+    }
+    h1{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:2.7rem;
+      line-height:1.12;
+      margin:0 0 10px;
+      letter-spacing:0.2px;
+    }
+    .updated{
+      color:var(--muted);
+      font-size:0.9rem;
+      margin:0 0 8px;
+      letter-spacing:0.2px;
+    }
+    .lede{
+      color:var(--text-2);
+      font-size:1.06rem;
+      margin:18px 0 0;
+    }
+    h2{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.7rem;
+      line-height:1.2;
+      margin:0 0 14px;
+      letter-spacing:0.2px;
+    }
+    h3{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.25rem;
+      margin:26px 0 8px;
+      color:var(--gold-soft);
+    }
+    section{margin-top:40px;}
+    p{margin:0 0 16px;}
+    ul{margin:0 0 16px;padding-left:1.15rem;}
+    li{margin:0 0 9px;}
+    li::marker{color:var(--gold);}
+    strong{color:var(--text);font-weight:600;}
+    .contact-block{
+      color:var(--text-2);
+      margin:0 0 16px;
+    }
+    .contact-block .field{color:var(--gold-soft);}
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin:0 0 16px;
+      font-size:0.94rem;
+    }
+    th,td{
+      text-align:left;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+    }
+    th{
+      color:var(--gold-soft);
+      font-weight:600;
+      font-size:0.82rem;
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+    }
+    td{color:var(--text-2);}
+    td strong{color:var(--text);}
+    .table-wrap{overflow-x:auto;margin:0 0 16px;}
+
+    .rule{
+      border:0;
+      height:1px;
+      margin:44px 0 0;
+      background:linear-gradient(90deg,rgba(200,164,92,0),rgba(200,164,92,0.55),rgba(200,164,92,0));
+    }
+
+    .foot{
+      max-width:740px;
+      margin:0 auto;
+      padding:8px 24px 56px;
+      color:var(--muted);
+      font-size:0.9rem;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    .foot-links a{margin-left:16px;}
+    .foot-links a:first-child{margin-left:0;}
+
+    @media (max-width:640px){
+      body{font-size:15.5px;}
+      .topbar{padding:20px 18px 0;}
+      .wrap{padding:40px 18px 36px;}
+      .foot{padding:8px 18px 44px;}
+      h1{font-size:2.1rem;}
+      h2{font-size:1.45rem;}
+      th,td{padding:8px 10px;font-size:0.86rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="wordmark">Receipt <span class="vault">Vault</span></span>
+    <a class="backlink" href="/">Back to app</a>
+  </div>
+
+  <main class="wrap">
+    <h1>Cookie Policy</h1>
+    <p class="updated">Last updated: July 2026</p>
+    <p class="lede">This page lists the cookies and local storage Receipt Vault uses, why each one exists, and how to change your choice. It expands on the short cookie section in our <a href="/privacy.html">Privacy Policy</a>.</p>
+
+    <section>
+      <h2>What cookies are</h2>
+      <p>Cookies are small text files a site stores in your browser. Receipt Vault also uses your browser's <strong>local storage</strong>, a similar mechanism, for a couple of the same purposes. We refer to both as "cookies" in this policy for simplicity, and note where local storage specifically is used.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>Essential cookies (always on)</h2>
+      <p>These keep the app functioning and cannot be switched off, because the app cannot sign you in or remember your consent choice without them. We don't ask for consent to set these, since they are strictly necessary for the service you've asked for.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Set by</th><th>Purpose</th><th>Duration</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Firebase Authentication cookies / local storage</strong></td>
+              <td>Google Firebase</td>
+              <td>Keeps you signed in with your Google account between visits and page loads.</td>
+              <td>Until you sign out or the session expires</td>
+            </tr>
+            <tr>
+              <td><strong>rv_consent</strong></td>
+              <td>Receipt Vault (local storage)</td>
+              <td>Remembers whether you chose "Essentials only" or "Accept all" in the cookie banner, so we only ask once.</td>
+              <td>Until you clear your browser storage</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>Optional cookies (only with consent)</h2>
+      <p><strong>None are active right now.</strong> The app's Firebase configuration includes a Google Analytics measurement identifier, but the code that would actually load Google Analytics has not been added yet, so no optional cookies currently run, whether you choose "Essentials only" or "Accept all."</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Set by</th><th>Purpose</th><th>Duration</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Google Analytics (via Firebase)</strong> — not yet active</td>
+              <td>Google</td>
+              <td>If enabled in a future update, would collect basic, aggregated usage information (such as page views) to understand how the app is used. Not for advertising.</td>
+              <td>Up to 2 years, per Google's defaults</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>If we do turn Google Analytics on, it will only run when you've chosen <strong>Accept all</strong>, and we'll update this page before it happens. We do not use advertising cookies, ad-tracking pixels, or cross-site tracking of any kind, whether or not Google Analytics is active.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>Third-party cookies from linked services</h2>
+      <p>A few third-party services that Receipt Vault relies on may set their own cookies as part of delivering their service, independent of our own consent banner:</p>
+      <ul>
+        <li><strong>Google Firebase</strong> may set additional cookies tied to authentication and security. See <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebase's privacy information</a>.</li>
+        <li><strong>Cloudinary</strong>, which hosts receipt images, may set operational cookies when its assets are requested. See <a href="https://cloudinary.com/privacy" target="_blank" rel="noopener">Cloudinary's Privacy Policy</a>.</li>
+      </ul>
+      <p>We don't control these third-party cookies directly. Refer to each provider's own policy for specifics.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>How to change your choice</h2>
+      <p>You can change your cookie choice at any time:</p>
+      <ul>
+        <li><strong>Clear the saved choice.</strong> Clear your browser's local storage for this site (or clear the <code>rv_consent</code> key specifically via your browser's developer tools) and reload the page. The cookie banner will appear again so you can choose afresh.</li>
+        <li><strong>Use your browser settings.</strong> Every major browser lets you block or delete cookies for a specific site. Note that blocking the essential Firebase cookies will prevent you from staying signed in.</li>
+      </ul>
+      <p>Declining optional cookies does not affect your ability to use any core feature of Receipt Vault: capturing receipts, saving records, viewing your dashboard, or exporting your data.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>Contact</h2>
+      <p>Questions about cookies or this policy? Reach us here:</p>
+      <p class="contact-block">
+        <span class="field">Receipt Vault (demo project)</span><br />
+        <span class="field">No registered address. This is a personal portfolio demo, not a real company.</span><br />
+        Email: <a href="mailto:demo@receiptvault.example">demo@receiptvault.example</a>
+      </p>
+    </section>
+  </main>
+
+  <div class="foot">
+    <span>Receipt Vault. A portfolio project.</span>
+    <span class="foot-links">
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/accessibility.html">Accessibility</a>
+      <a href="/">Back to app</a>
+    </span>
+  </div>
+</body>
+</html>

@@ -129,6 +129,8 @@
       gap:16px;
       flex-wrap:wrap;
     }
+    .foot-links a{margin-left:16px;}
+    .foot-links a:first-child{margin-left:0;}
 
     @media (max-width:640px){
       body{font-size:15.5px;}
@@ -184,6 +186,14 @@
     <hr class="rule" />
 
     <section>
+      <h2>We do not sell your personal data</h2>
+      <p><strong>Receipt Vault does not sell, rent, or trade your personal data, and never has.</strong> We do not exchange your account details, receipt records, or receipt images for money or anything else of value, and we do not share them with data brokers or advertisers. This applies to everyone, regardless of where you live, including under laws like the California Consumer Privacy Act (CCPA/CPRA) that specifically address the "sale" or "sharing" of personal information for cross-context advertising. Because we don't do either, there is no opt-out link to click; the answer is already no.</p>
+      <p>The only parties that ever see your data are the third-party infrastructure providers described below, and only to the extent needed to run the app on our behalf, not to use your data for their own purposes.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
       <h2>How we use it</h2>
       <ul>
         <li>To sign you in and keep you signed in across visits.</li>
@@ -233,7 +243,8 @@
       <h2>Cookies and local storage</h2>
       <p>Firebase Authentication sets cookies and uses your browser's local storage to keep you signed in between visits. These are essential. Without them you would have to sign in again on every page load, so they cannot be turned off while you use the app.</p>
       <p>When you first visit, a cookie banner asks whether you also allow non-essential cookies. Your choice is saved in your browser's local storage under the key <strong>rv_consent</strong> so we only ask once. No third-party analytics or advertising cookies load unless you choose <strong>Accept all</strong>.</p>
-      <p>Our Firebase configuration includes a Google Analytics measurement identifier. If you accept all cookies, Google Analytics may be used to collect basic, aggregated usage information. If you choose essentials only, it is not used. There are no advertising cookies either way.</p>
+      <p>Our Firebase configuration includes a Google Analytics measurement identifier, but Google Analytics is <strong>not currently active</strong> in the app; the code that would load it has not been added yet. If we do turn it on in the future, it will only run when you've chosen <strong>Accept all</strong>, and this policy will be updated to reflect that before it happens. There are no advertising cookies either way.</p>
+      <p>For the full list of cookies we use, who sets each one, and how to change your choice, see our <a href="/cookies.html">Cookie Policy</a>.</p>
     </section>
 
     <hr class="rule" />
@@ -294,6 +305,13 @@
     <hr class="rule" />
 
     <section>
+      <h2>Accessibility</h2>
+      <p>We aim for Receipt Vault to be usable with assistive technology such as screen readers and keyboard-only navigation. See our <a href="/accessibility.html">Accessibility Statement</a> for what we've done, known limitations, and how to reach us if something doesn't work for you.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
       <h2>Changes to this policy</h2>
       <p>We may update this policy from time to time. When we do, we will change the "Last updated" date at the top. If a change is significant, we will try to flag it in the app. Please check back now and then.</p>
     </section>
@@ -313,7 +331,12 @@
 
   <div class="foot">
     <span>Receipt Vault. A portfolio project.</span>
-    <a href="/">Back to app</a>
+    <span class="foot-links">
+      <a href="/terms.html">Terms</a>
+      <a href="/cookies.html">Cookies</a>
+      <a href="/accessibility.html">Accessibility</a>
+      <a href="/">Back to app</a>
+    </span>
   </div>
 </body>
 </html>

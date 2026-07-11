@@ -130,6 +130,8 @@
       gap:16px;
       flex-wrap:wrap;
     }
+    .foot-links a{margin-left:16px;}
+    .foot-links a:first-child{margin-left:0;}
 
     @media (max-width:640px){
       body{font-size:15.5px;}
@@ -303,7 +305,12 @@
 
   <div class="foot">
     <span>Receipt Vault. A portfolio project.</span>
-    <a href="/">Back to app</a>
+    <span class="foot-links">
+      <a href="/privacy.html">Privacy</a>
+      <a href="/cookies.html">Cookies</a>
+      <a href="/accessibility.html">Accessibility</a>
+      <a href="/">Back to app</a>
+    </span>
   </div>
 </body>
 </html>

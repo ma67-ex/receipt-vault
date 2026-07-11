@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08080a" />
+  <title>Accessibility Statement · Receipt Vault</title>
+  <meta name="description" content="Receipt Vault's commitment to accessibility, the standards we aim for, known limitations, and how to reach us with feedback." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#08080a;
+      --bg-2:#0d0d10;
+      --surface:#111114;
+      --border:#232329;
+      --text:#ece9e3;
+      --text-2:#b7b3aa;
+      --muted:#7e7a72;
+      --gold:#c8a45c;
+      --gold-soft:#e0c690;
+    }
+    *{box-sizing:border-box;}
+    html{-webkit-text-size-adjust:100%;}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      font-size:16px;
+      line-height:1.75;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(200,164,92,0.28);}
+    a:hover{color:var(--gold-soft);border-bottom-color:rgba(224,198,144,0.6);}
+    a:focus-visible{outline:2px solid var(--gold-soft);outline-offset:3px;border-radius:2px;}
+
+    .topbar{
+      max-width:740px;
+      margin:0 auto;
+      padding:28px 24px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .wordmark{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.35rem;
+      letter-spacing:0.3px;
+      color:var(--text);
+    }
+    .wordmark .vault{color:var(--gold);}
+    .backlink{
+      font-size:0.9rem;
+      color:var(--text-2);
+      border-bottom-color:transparent;
+    }
+    .backlink:hover{color:var(--gold-soft);}
+
+    .wrap{
+      max-width:740px;
+      margin:0 auto;
+      padding:64px 24px 48px;
+    }
+    h1{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:2.7rem;
+      line-height:1.12;
+      margin:0 0 10px;
+      letter-spacing:0.2px;
+    }
+    .updated{
+      color:var(--muted);
+      font-size:0.9rem;
+      margin:0 0 8px;
+      letter-spacing:0.2px;
+    }
+    .lede{
+      color:var(--text-2);
+      font-size:1.06rem;
+      margin:18px 0 0;
+    }
+    h2{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.7rem;
+      line-height:1.2;
+      margin:0 0 14px;
+      letter-spacing:0.2px;
+    }
+    h3{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.25rem;
+      margin:26px 0 8px;
+      color:var(--gold-soft);
+    }
+    section{margin-top:40px;}
+    p{margin:0 0 16px;}
+    ul{margin:0 0 16px;padding-left:1.15rem;}
+    li{margin:0 0 9px;}
+    li::marker{color:var(--gold);}
+    strong{color:var(--text);font-weight:600;}
+    .contact-block{
+      color:var(--text-2);
+      margin:0 0 16px;
+    }
+    .contact-block .field{color:var(--gold-soft);}
+
+    .rule{
+      border:0;
+      height:1px;
+      margin:44px 0 0;
+      background:linear-gradient(90deg,rgba(200,164,92,0),rgba(200,164,92,0.55),rgba(200,164,92,0));
+    }
+
+    .foot{
+      max-width:740px;
+      margin:0 auto;
+      padding:8px 24px 56px;
+      color:var(--muted);
+      font-size:0.9rem;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    .foot-links a{margin-left:16px;}
+    .foot-links a:first-child{margin-left:0;}
+
+    @media (max-width:640px){
+      body{font-size:15.5px;}
+      .topbar{padding:20px 18px 0;}
+      .wrap{padding:40px 18px 36px;}
+      .foot{padding:8px 18px 44px;}
+      h1{font-size:2.1rem;}
+      h2{font-size:1.45rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="wordmark">Receipt <span class="vault">Vault</span></span>
+    <a class="backlink" href="/">Back to app</a>
+  </div>
+
+  <main class="wrap">
+    <h1>Accessibility Statement</h1>
+    <p class="updated">Last updated: July 2026</p>
+    <p class="lede">Receipt Vault is a personal portfolio project, but we still want it to work for as many people as possible, including people who use assistive technology such as screen readers, screen magnifiers, voice control, or keyboard-only navigation. This page explains what we aim for, what we've done, and where the app currently falls short.</p>
+
+    <section>
+      <h2>Our commitment</h2>
+      <p>We aim to meet <strong>Web Content Accessibility Guidelines (WCAG) 2.1, Level AA</strong>, the standard generally referenced by accessibility laws such as the Americans with Disabilities Act (ADA) in the United States, the European Accessibility Act, and the UK Equality Act. WCAG 2.1 AA is a widely used benchmark, not a claim of certification, and Receipt Vault is a small, single-developer project rather than a commercial product with a dedicated accessibility team. We treat this as an ongoing goal we work toward, not a box we've fully checked.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>What we've done</h2>
+      <ul>
+        <li><strong>Semantic structure.</strong> Pages use proper heading levels, landmark regions, and native HTML controls (buttons, links, form fields) rather than generic clickable elements, so assistive technology can navigate the page in a predictable order.</li>
+        <li><strong>Keyboard access.</strong> Core flows — signing in, capturing or uploading a receipt, editing fields, viewing the dashboard, and exporting data — can be operated without a mouse.</li>
+        <li><strong>Visible focus states.</strong> Interactive elements show a visible outline when focused with a keyboard, so you can tell where you are on the page.</li>
+        <li><strong>Color contrast.</strong> Text and interactive elements are checked against WCAG AA contrast ratios (4.5:1 for normal text, 3:1 for large text and UI components) against the app's dark background.</li>
+        <li><strong>Text alternatives.</strong> Icons and images that convey meaning include text alternatives (such as <code>aria-label</code> or accessible names) so they are announced correctly by screen readers.</li>
+        <li><strong>Responsive layout.</strong> The interface adapts to different screen sizes and zoom levels, and reflows rather than requiring horizontal scrolling at common zoom levels up to 200%.</li>
+      </ul>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>Known limitations</h2>
+      <p>We would rather tell you where things fall short than leave you to discover it. As of this writing:</p>
+      <ul>
+        <li><strong>On-device text recognition has no accessible fallback for reviewing the source image.</strong> The store, amount, and date pulled from a receipt photo are editable text fields, but there is no automated description of the receipt image itself, so a screen reader user relies on the extracted text (which can be wrong) rather than the photo.</li>
+        <li><strong>Charts on the dashboard are primarily visual.</strong> The monthly and yearly spending charts do not yet have a full text-equivalent data table alternative. The underlying totals are also shown as text elsewhere on the dashboard, but the charts themselves are not fully screen-reader accessible.</li>
+        <li><strong>Third-party components.</strong> Some UI comes from third-party libraries (for camera capture and charting) that we don't fully control the internals of. We test them but can't guarantee every state meets AA on every browser and assistive technology combination.</li>
+        <li><strong>No dedicated accessibility audit.</strong> This statement reflects our own testing (manual keyboard checks, contrast checks, and spot checks with a screen reader), not a third-party professional audit.</li>
+      </ul>
+      <p>We're working through these as time allows, since this is maintained by one person outside of paid work.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>Compatibility</h2>
+      <p>Receipt Vault is built to work with recent versions of major browsers (Chrome, Firefox, Safari, Edge) and their built-in accessibility features, and with commonly used screen readers such as VoiceOver, NVDA, and TalkBack. Older browsers or less common assistive technology combinations may not be fully supported.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>Feedback and contact</h2>
+      <p>If you hit a barrier using Receipt Vault with assistive technology, or something on this page doesn't match what you experience, please tell us. Include the page you were on, the assistive technology and browser you were using, and what happened, if you can. We'll do our best to fix it, given this is an unpaid side project maintained by one person.</p>
+      <p class="contact-block">
+        <span class="field">Receipt Vault (demo project)</span><br />
+        <span class="field">No registered address. This is a personal portfolio demo, not a real company.</span><br />
+        Email: <a href="mailto:demo@receiptvault.example">demo@receiptvault.example</a>
+      </p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>Changes to this statement</h2>
+      <p>We may update this statement as the app changes or as we fix accessibility issues. When we do, we'll update the "Last updated" date at the top.</p>
+    </section>
+  </main>
+
+  <div class="foot">
+    <span>Receipt Vault. A portfolio project.</span>
+    <span class="foot-links">
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/cookies.html">Cookies</a>
+      <a href="/">Back to app</a>
+    </span>
+  </div>
+</body>
+</html>

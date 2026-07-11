@@ -7,6 +7,8 @@ export default function Footer() {
         <nav className="site-foot-links">
           <a href="/privacy.html">Privacy Policy</a>
           <a href="/terms.html">Terms of Service</a>
+          <a href="/cookies.html">Cookie Policy</a>
+          <a href="/accessibility.html">Accessibility</a>
         </nav>
 
         <span className="site-foot-copy">© 2026 Muhammad Abdullah. All rights reserved.</span>
