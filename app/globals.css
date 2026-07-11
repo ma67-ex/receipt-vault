@@ -194,6 +194,50 @@ h1,h2,h3{font-family:var(--serif); font-weight:600; letter-spacing:.2px; color:v
 .chart-box canvas{max-height:264px}
 
 /* ======================================================================
+   SITE FOOTER (black bar, spans the full app: login screen + app shell)
+   ====================================================================== */
+.site-foot{
+  width:100%;
+  background:#0a0a0a;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px 24px;
+  padding:14px 24px;
+  font-size:12.5px;
+}
+.site-foot-brand{
+  font-family:var(--serif); font-weight:600; letter-spacing:.3px;
+  color:#fff; opacity:.9;
+}
+.site-foot-right{
+  display:flex; align-items:center; flex-wrap:wrap;
+  gap:16px 22px;
+  margin-left:auto;
+}
+.site-foot-links{display:flex; align-items:center; gap:16px}
+.site-foot-links a{
+  color:#fff; opacity:.75;
+  text-decoration:none; border-bottom:1px solid transparent;
+  transition:opacity .15s ease, border-color .15s ease;
+}
+.site-foot-links a:hover{opacity:1; border-bottom-color:rgba(255,255,255,.55)}
+.site-foot-copy{color:#fff; opacity:.6; white-space:nowrap}
+.site-foot-social{display:flex; align-items:center; gap:14px}
+.site-foot-social a{
+  color:#fff; opacity:.75; display:flex;
+  transition:opacity .15s ease;
+}
+.site-foot-social a:hover{opacity:1}
+
+@media (max-width:640px){
+  .site-foot{justify-content:center; text-align:center; padding:16px 20px}
+  .site-foot-right{margin-left:0; justify-content:center}
+}
+
+/* ======================================================================
    CAPTURE
    ====================================================================== */
 .capture-drop{

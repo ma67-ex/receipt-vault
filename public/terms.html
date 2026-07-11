@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08080a" />
+  <title>Terms of Service · Receipt Vault</title>
+  <meta name="description" content="The terms that govern using Receipt Vault: what the service is, what you agree to, and the honest limits of a portfolio project." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#08080a;
+      --bg-2:#0d0d10;
+      --surface:#111114;
+      --border:#232329;
+      --text:#ece9e3;
+      --text-2:#b7b3aa;
+      --muted:#7e7a72;
+      --gold:#c8a45c;
+      --gold-soft:#e0c690;
+    }
+    *{box-sizing:border-box;}
+    html{-webkit-text-size-adjust:100%;}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      font-size:16px;
+      line-height:1.75;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(200,164,92,0.28);}
+    a:hover{color:var(--gold-soft);border-bottom-color:rgba(224,198,144,0.6);}
+
+    .topbar{
+      max-width:740px;
+      margin:0 auto;
+      padding:28px 24px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .wordmark{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.35rem;
+      letter-spacing:0.3px;
+      color:var(--text);
+    }
+    .wordmark .vault{color:var(--gold);}
+    .backlink{
+      font-size:0.9rem;
+      color:var(--text-2);
+      border-bottom-color:transparent;
+    }
+    .backlink:hover{color:var(--gold-soft);}
+
+    .wrap{
+      max-width:740px;
+      margin:0 auto;
+      padding:64px 24px 48px;
+    }
+    h1{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:2.7rem;
+      line-height:1.12;
+      margin:0 0 10px;
+      letter-spacing:0.2px;
+    }
+    .updated{
+      color:var(--muted);
+      font-size:0.9rem;
+      margin:0 0 8px;
+      letter-spacing:0.2px;
+    }
+    .lede{
+      color:var(--text-2);
+      font-size:1.06rem;
+      margin:18px 0 0;
+    }
+    h2{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.7rem;
+      line-height:1.2;
+      margin:0 0 14px;
+      letter-spacing:0.2px;
+    }
+    h3{
+      font-family:"Cormorant Garamond",serif;
+      font-weight:600;
+      font-size:1.25rem;
+      margin:26px 0 8px;
+      color:var(--gold-soft);
+    }
+    section{margin-top:40px;}
+    p{margin:0 0 16px;}
+    ul{margin:0 0 16px;padding-left:1.15rem;}
+    li{margin:0 0 9px;}
+    li::marker{color:var(--gold);}
+    strong{color:var(--text);font-weight:600;}
+    em{color:var(--text-2);}
+    .contact-block{
+      color:var(--text-2);
+      margin:0 0 16px;
+    }
+    .contact-block .field{color:var(--gold-soft);}
+
+    .rule{
+      border:0;
+      height:1px;
+      margin:44px 0 0;
+      background:linear-gradient(90deg,rgba(200,164,92,0),rgba(200,164,92,0.55),rgba(200,164,92,0));
+    }
+
+    .foot{
+      max-width:740px;
+      margin:0 auto;
+      padding:8px 24px 56px;
+      color:var(--muted);
+      font-size:0.9rem;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    @media (max-width:640px){
+      body{font-size:15.5px;}
+      .topbar{padding:20px 18px 0;}
+      .wrap{padding:40px 18px 36px;}
+      .foot{padding:8px 18px 44px;}
+      h1{font-size:2.1rem;}
+      h2{font-size:1.45rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="wordmark">Receipt <span class="vault">Vault</span></span>
+    <a class="backlink" href="/">Back to app</a>
+  </div>
+
+  <main class="wrap">
+    <h1>Terms of Service</h1>
+    <p class="updated">Last updated: July 2026</p>
+    <p class="lede">Receipt Vault is a free, browser-based tool for photographing receipts and keeping a running record of what you spend. It's a personal portfolio project, not a company, and these terms are written to match that reality: plain language, real limitations stated outright, and no attempt to promise more than a small, single-developer project can deliver. By using Receipt Vault, you're agreeing to the terms below, so please read them, especially the sections on receipt images and warranties.</p>
+
+    <section>
+      <h2>1. Acceptance of these terms</h2>
+      <p>By creating an account, signing in, or otherwise using Receipt Vault (the "Service"), you agree to these Terms of Service ("Terms") and to our <a href="/privacy.html">Privacy Policy</a>, which is incorporated into these Terms by reference. If you don't agree, please don't use the Service. If you are using the Service on behalf of someone else, you confirm you have the authority to accept these Terms for them.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>2. What Receipt Vault is</h2>
+      <p>Receipt Vault lets you sign in with your Google account, photograph or upload a receipt, and automatically extract the store name, amount, and date using text recognition that runs entirely in your own browser. Your receipt records are saved to your account so you can track spending, view totals and charts, and export your data as CSV or JSON whenever you like.</p>
+      <p>Receipt Vault is offered free of charge as a personal portfolio and demo project. It is not a registered business, it does not process payments, and it is not a commercial product with a service-level agreement. It runs on the free tiers of third-party services, which shapes what we can realistically promise (see Sections 8 and 9).</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>3. Eligibility</h2>
+      <p>You must be at least 16 years old to use Receipt Vault, matching the age threshold in our Privacy Policy. By using the Service, you confirm that you meet this requirement. If we learn that someone under 16 has created an account, we will delete it and the associated data.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>4. Accounts</h2>
+      <p>You sign in to Receipt Vault using your Google account through Firebase Authentication. We never see or store your Google password.</p>
+      <h3>One account per person</h3>
+      <p>Accounts are personal to you and tied to the Google identity you sign in with. Don't create or use an account on someone else's behalf without their permission, and don't maintain multiple accounts to abuse or circumvent these Terms.</p>
+      <h3>You're responsible for your account</h3>
+      <p>You're responsible for keeping your Google account secure, since that's what controls access to Receipt Vault. If you believe your account has been accessed without your permission, contact us and secure your Google account directly with Google.</p>
+      <h3>Accuracy</h3>
+      <p>The display name, email, and profile photo attached to your account come from Google. If they're wrong, that's a Google account setting, not something we control.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>5. Acceptable use</h2>
+      <p>You agree to use Receipt Vault only for its intended purpose: tracking your own receipts. In particular, you agree not to:</p>
+      <ul>
+        <li>Upload or store content that is illegal, infringing, fraudulent, or that you don't have the right to upload;</li>
+        <li>Use the receipt upload or text-recognition pipeline for anything other than genuine receipts (for example, using it to host, share, or launder arbitrary images or files);</li>
+        <li>Attempt to access, scrape, or interfere with another user's account or receipt data, or attempt to circumvent the database security rules that keep accounts separated;</li>
+        <li>Attempt to guess, enumerate, or systematically access Cloudinary image URLs belonging to other users;</li>
+        <li>Reverse engineer, decompile, or probe the Service in a way intended to find and exploit vulnerabilities, disrupt the Service, or extract data you're not authorized to access;</li>
+        <li>Use automated means (bots, scrapers, scripts) to interact with the Service at a volume or in a manner that could degrade it for others, given that it runs on free infrastructure with no capacity to absorb abuse; or</li>
+        <li>Use the Service in any way that violates applicable law.</li>
+      </ul>
+      <p>Because Receipt Vault runs entirely on free tiers with no dedicated backend, abuse by even a small number of users can affect the Service for everyone. We reserve the right to suspend or terminate access for anyone who violates this section (see Section 12).</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>6. Your content and receipt images</h2>
+      <p><strong>You own your data.</strong> The receipts, images, and records you upload remain yours. We don't claim ownership over anything you upload.</p>
+      <p><strong>The license you grant us.</strong> By uploading a receipt, you grant us a limited, non-exclusive license to store, process, and display that content back to you as part of operating the Service — for example, showing it on your dashboard, including it in your exports, or hosting the underlying image file on our behalf via Cloudinary. This license exists only to run the Service for you. We don't use your receipts for advertising, don't sell them, and don't share them with anyone except the third-party service providers described in our Privacy Policy.</p>
+      <h3>Important limitation on receipt images — please read this</h3>
+      <p>Receipt images are uploaded to Cloudinary using an unsigned upload preset. In practice, this means:</p>
+      <ul>
+        <li>Each image is stored at a public web address that is not protected by your login. The address is long and hard to guess, but anyone who obtains it can view the image.</li>
+        <li>Images cannot be deleted programmatically from the browser. If you delete a receipt in the app, the database record is removed immediately, but the underlying image file on Cloudinary is <strong>not</strong> automatically deleted. It remains at its existing address until a human manually removes it on request.</li>
+      </ul>
+      <p>Full detail on this risk, and how to request manual deletion of an image, is in our <a href="/privacy.html">Privacy Policy</a>. By uploading a receipt image, you acknowledge and accept this limitation. We recommend not uploading receipts that show highly sensitive information.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>7. Intellectual property</h2>
+      <p>Receipt Vault's code, design, branding, and the "Receipt Vault" name are the property of the developer and are shared here as a portfolio demonstration, not licensed to you for reuse, redistribution, or commercial use. Nothing in these Terms transfers any of that intellectual property to you.</p>
+      <p>This is separate from your own content: your receipt data and images, as described in Section 6, remain yours. Exporting your data as CSV or JSON does not affect ownership either way — it's simply your data, in a portable format, whenever you want it.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>8. Third-party services</h2>
+      <p>Receipt Vault is built entirely on third-party infrastructure: Google Firebase (authentication and database), Cloudinary (image hosting), and GitHub Pages (static site hosting). We rely on these services being available and behaving as documented, but we don't control them, and we're not responsible for their outages, downtime, policy changes, pricing changes, security incidents, or discontinuation. If one of these providers changes or shuts down a service Receipt Vault depends on, the app may stop working properly, and we may not be able to fix that quickly, or at all, given this is an unpaid side project.</p>
+      <p>Your use of these underlying services is also subject to their own terms and privacy policies, which we link to in our <a href="/privacy.html">Privacy Policy</a>.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>9. Disclaimer of warranties</h2>
+      <p>Receipt Vault is provided <strong>"as is" and "as available,"</strong> without warranties of any kind, whether express, implied, or statutory, to the fullest extent permitted by law. Specifically, and without limiting the above:</p>
+      <ul>
+        <li><strong>No guarantee of accuracy.</strong> Text recognition (OCR) runs client-side and is not perfect. The store name, amount, and date extracted from a receipt photo may be wrong. You are responsible for checking and correcting these fields before relying on them, and we make no warranty as to their accuracy.</li>
+        <li><strong>No guarantee of uptime.</strong> Because the Service runs entirely on free tiers of third-party infrastructure with no dedicated backend and no service-level agreement, we do not guarantee that the Service will be available, uninterrupted, timely, secure, or error-free.</li>
+        <li><strong>No guarantee of data preservation.</strong> We do not guarantee backups, data durability, or that your data will never be lost, corrupted, or become inaccessible due to a bug, an outage, or a change at one of our third-party providers. Use the export feature regularly if your data matters to you.</li>
+        <li><strong>No professional advice.</strong> Receipt Vault is a personal expense-tracking tool. It is not accounting, tax, or financial advice, and you should not treat totals or exports as a substitute for professional recordkeeping if your situation requires it.</li>
+      </ul>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>10. Limitation of liability</h2>
+      <p>Receipt Vault is a free service offered by an individual as a portfolio project. To the maximum extent permitted by applicable law, we will not be liable for any indirect, incidental, special, consequential, or punitive damages, or for any loss of data, profits, revenue, or goodwill, arising out of or related to your use of, or inability to use, the Service — even if we've been advised of the possibility of such damages.</p>
+      <p>To the extent any liability cannot be excluded under applicable law, our total liability to you for any claim arising out of or relating to these Terms or the Service is limited to the greater of (a) the amount you paid us to use the Service in the twelve months before the claim arose, or (b) fifty US dollars (USD $50). Since Receipt Vault is free, in most cases that means our liability is limited to (b).</p>
+      <p>Nothing in these Terms is intended to exclude liability that cannot lawfully be excluded, such as liability for fraud or for death or personal injury caused by negligence.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>11. Indemnification</h2>
+      <p>You agree to indemnify and hold us harmless from any claims, damages, losses, or expenses (including reasonable legal fees) arising out of your violation of these Terms, your misuse of the Service, or content you upload that infringes someone else's rights or violates the law. We'll let you know promptly if a claim like this arises so you can respond to it.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>12. Termination</h2>
+      <p><strong>We can suspend or terminate your access.</strong> We may suspend or terminate your account, without prior notice, if we reasonably believe you've violated these Terms, particularly Section 5 (Acceptable Use), or if continuing to provide you access would pose a risk to the Service or other users. Given the size and nature of this project, enforcement is manual and best-effort, not automated or guaranteed.</p>
+      <p><strong>You can stop using the Service at any time.</strong> There's no contract locking you in. You can simply stop using Receipt Vault, and you can request deletion of your account and data at any time by emailing us, as described in our Privacy Policy.</p>
+      <p><strong>What happens on termination.</strong> If your account is terminated, your access to stored records will end. As described in Section 6 and our Privacy Policy, deleting an account removes your database records, but previously uploaded Cloudinary images may persist at their existing (unguessable) URLs until manually removed. Export your data beforehand if you want to keep a copy.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>13. Changes to the Service or these Terms</h2>
+      <p>Because this is a hobbyist project maintained by one person, the Service may change, break, or be discontinued with little or no notice, and features described here may be added, altered, or removed over time.</p>
+      <p>We may also update these Terms from time to time. When we do, we'll update the "Last updated" date at the top of this page. Continuing to use the Service after changes take effect means you accept the updated Terms. If a change is significant, we'll try to flag it within the app itself.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>14. Governing law</h2>
+      <p>These Terms are governed by the laws of <strong>[your jurisdiction — placeholder]</strong>, without regard to conflict-of-law principles. Any disputes arising under these Terms will be handled in the courts of that jurisdiction, to the extent applicable law allows.</p>
+      <p><em>Note: this is a placeholder. Since Receipt Vault has no registered business address, replace this with the jurisdiction you're comfortable naming before treating this page as final.</em></p>
+    </section>
+
+    <hr class="rule" />
+
+    <section>
+      <h2>15. Contact</h2>
+      <p>Questions about these Terms? Reach us here:</p>
+      <p class="contact-block">
+        <span class="field">Receipt Vault (demo project)</span><br />
+        <span class="field">No registered address. This is a personal portfolio demo, not a real company.</span><br />
+        Email: <a href="mailto:demo@receiptvault.example">demo@receiptvault.example</a>
+      </p>
+      <p>For anything about how your data is handled specifically, see our <a href="/privacy.html">Privacy Policy</a>.</p>
+    </section>
+  </main>
+
+  <div class="foot">
+    <span>Receipt Vault. A portfolio project.</span>
+    <a href="/">Back to app</a>
+  </div>
+</body>
+</html>

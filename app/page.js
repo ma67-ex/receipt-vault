@@ -7,6 +7,7 @@ import { ToastProvider } from "@/components/Toast";
 import Login from "@/components/Login";
 import AppShell from "@/components/AppShell";
 import ConsentBanner from "@/components/ConsentBanner";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const [ready, setReady] = useState(false);
@@ -43,6 +44,7 @@ export default function Home() {
       )}
       {ready && !user && <Login />}
       {ready && user && <AppShell user={user} receipts={receipts} />}
+      {ready && <Footer />}
       <ConsentBanner />
     </ToastProvider>
   );

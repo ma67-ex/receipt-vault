@@ -4,9 +4,9 @@
   "private": true,
   "description": "Photograph a receipt and Receipt Vault reads the store, amount and date, files the image, and shows your spending. Next.js port.",
   "scripts": {
-    "dev": "next dev -p 5173",
+    "dev": "next dev -p 4000",
     "build": "next build",
-    "start": "next start -p 5173",
+    "start": "next start -p 4000",
     "lint": "next lint"
   },
   "dependencies": {
