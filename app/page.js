@@ -13,15 +13,20 @@ export default function Home() {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState(null);
   const [receipts, setReceipts] = useState([]);
+  // false until the first Firestore snapshot lands (cache or network) — drives
+  // the skeleton placeholders instead of showing empty tables mid-load.
+  const [dataReady, setDataReady] = useState(false);
 
   useEffect(() => {
     return onAuthStateChanged(auth, (u) => { setUser(u); setReady(true); });
   }, []);
 
   // Live receipts for the signed-in user. Single-field query (no composite
-  // index), sorted newest-first in the browser.
+  // index), sorted newest-first in the browser. Firestore's persistent cache
+  // fills this from disk first when offline (snap.metadata.fromCache).
   useEffect(() => {
-    if (!user) { setReceipts([]); return; }
+    if (!user) { setReceipts([]); setDataReady(false); return; }
+    setDataReady(false);
     const q = query(collection(db, "receipts"), where("uid", "==", user.uid));
     return onSnapshot(
       q,
@@ -29,8 +34,9 @@ export default function Home() {
         const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         rows.sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
         setReceipts(rows);
+        setDataReady(true);
       },
-      (err) => console.error("Firestore load error:", err)
+      (err) => { console.error("Firestore load error:", err); setDataReady(true); }
     );
   }, [user]);
 
@@ -43,7 +49,7 @@ export default function Home() {
         </section>
       )}
       {ready && !user && <Login />}
-      {ready && user && <AppShell user={user} receipts={receipts} />}
+      {ready && user && <AppShell user={user} receipts={receipts} loading={!dataReady} />}
       {ready && <Footer />}
       <ConsentBanner />
     </ToastProvider>

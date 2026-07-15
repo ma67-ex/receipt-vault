@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Cormorant_Garamond, Inter } from "next/font/google";
+import SWRegister from "@/components/SWRegister";
 
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
@@ -31,7 +32,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable}`}>
-      <body>{children}</body>
+      <body>{children}<SWRegister /></body>
     </html>
   );
 }

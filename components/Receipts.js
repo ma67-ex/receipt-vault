@@ -5,7 +5,36 @@ import { db } from "@/lib/firebase";
 import { CATEGORIES, money, safeImageUrl } from "@/lib/receipt";
 import { useToast } from "./Toast";
 
-export default function Receipts({ receipts }) {
+function ReceiptsSkeleton() {
+  return (
+    <div className="tab active">
+      <h2>All receipts</h2>
+      <p className="section-lead">Everything you have filed, newest first.</p>
+      <div className="ledger">
+        <div className="ledger-head">
+          <span>Store</span><span>Category</span><span>Date</span>
+          <span className="num">Amount</span><span></span>
+        </div>
+        <div className="ledger-body">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div className="row" key={i}>
+              <div className="cell store">
+                <span className="thumb sk" />
+                <span className="sk sk-line" style={{ width: "58%" }} />
+              </div>
+              <div className="cell cat"><span className="sk sk-line" style={{ width: "70%" }} /></div>
+              <div className="cell date"><span className="sk sk-line" style={{ width: "80%" }} /></div>
+              <div className="cell amt num"><span className="sk sk-line" style={{ width: "50%" }} /></div>
+              <div className="cell act"><span className="sk sk-line" style={{ width: "60%" }} /></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Receipts({ receipts, loading = false }) {
   const toast = useToast();
   const [term, setTerm] = useState("");
   const [cat, setCat] = useState("");
@@ -24,6 +53,8 @@ export default function Receipts({ receipts }) {
     try { await deleteDoc(doc(db, "receipts", id)); toast("Deleted"); }
     catch (err) { toast("Delete failed: " + err.message); }
   };
+
+  if (loading) return <ReceiptsSkeleton />;
 
   return (
     <div className="tab active">

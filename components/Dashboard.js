@@ -11,7 +11,32 @@ Chart.register(
   CategoryScale, LinearScale, Legend, Tooltip
 );
 
-export default function Dashboard({ receipts }) {
+function DashboardSkeleton() {
+  return (
+    <div className="tab active">
+      <h2>Dashboard</h2>
+      <p className="section-lead">A running view of what you have spent and saved.</p>
+      <div className="figures">
+        {[0, 1, 2].map((i) => (
+          <div className="fig" key={i}>
+            <span className="sk sk-line" style={{ width: "60%" }} />
+            <span className="sk sk-line sk-lg" style={{ width: "45%" }} />
+          </div>
+        ))}
+      </div>
+      <div className="charts">
+        {[0, 1].map((i) => (
+          <section className="chart" key={i}>
+            <span className="sk sk-line" style={{ width: "35%" }} />
+            <div className="chart-box"><span className="sk sk-block" /></div>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function Dashboard({ receipts, loading = false }) {
   const monthlyRef = useRef(null);
   const categoryRef = useRef(null);
   const monthlyChart = useRef(null);
@@ -74,6 +99,8 @@ export default function Dashboard({ receipts }) {
       categoryChart.current?.destroy();
     };
   }, [receipts]);
+
+  if (loading) return <DashboardSkeleton />;
 
   return (
     <div className="tab active">

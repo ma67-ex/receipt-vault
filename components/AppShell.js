@@ -14,7 +14,7 @@ const TABS = [
   { id: "export", label: "Export" },
 ];
 
-export default function AppShell({ user, receipts }) {
+export default function AppShell({ user, receipts, loading = false }) {
   const [tab, setTab] = useState("dashboard");
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -43,9 +43,9 @@ export default function AppShell({ user, receipts }) {
       <button className="menu-btn" aria-label="Open menu" onClick={() => setMenuOpen((o) => !o)}>Menu</button>
 
       <main className="content">
-        {tab === "dashboard" && <Dashboard receipts={receipts} />}
+        {tab === "dashboard" && <Dashboard receipts={receipts} loading={loading} />}
         {tab === "capture" && <Capture uid={user.uid} onSaved={() => go("receipts")} />}
-        {tab === "receipts" && <Receipts receipts={receipts} />}
+        {tab === "receipts" && <Receipts receipts={receipts} loading={loading} />}
         {tab === "export" && <Export receipts={receipts} />}
       </main>
     </section>
