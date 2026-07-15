@@ -4,6 +4,8 @@
 ![Backend](https://img.shields.io/badge/backend-Firebase%20%2B%20Cloudinary-FFCA28)
 ![Cost](https://img.shields.io/badge/cost-%240%20free%20tier-2ea44f)
 ![OCR](https://img.shields.io/badge/OCR-Tesseract.js-blueviolet)
+![Last commit](https://img.shields.io/github/last-commit/ma67-ex/receipt-vault)
+![Repo size](https://img.shields.io/github/repo-size/ma67-ex/receipt-vault)
 
 Photograph a receipt and the app reads the **store, amount and date** for you, stores the **photo and its data** in the cloud, and shows your **monthly and yearly spending**. Export everything as CSV at tax season.
 
