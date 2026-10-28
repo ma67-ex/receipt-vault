@@ -6,6 +6,11 @@
 ![OCR](https://img.shields.io/badge/OCR-Tesseract.js-blueviolet)
 ![Last commit](https://img.shields.io/github/last-commit/ma67-ex/receipt-vault)
 ![Repo size](https://img.shields.io/github/repo-size/ma67-ex/receipt-vault)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+[![ReceiptVault sign-in screen](docs/screenshot.png)](https://receipt-vault-seven.vercel.app)
+
+**[Live demo](https://receipt-vault-seven.vercel.app)**
 
 Photograph a receipt and the app reads the **store, amount and date** for you, stores the **photo and its data** in the cloud, and shows your **monthly and yearly spending**. Export everything as CSV at tax season.
 
@@ -163,3 +168,7 @@ npm start        # serve the production build on :5173
 - Client config keys in `lib/config.js` are meant to be public. Security comes from the Firestore rules above.
 - The receipt list loads a user's whole collection into memory (fine at family scale). For thousands of receipts, add Firestore pagination (`limit` + `startAfter`).
 - Deleting a receipt removes its Firestore record; the Cloudinary image stays stored (unsigned uploads cannot be deleted without exposing a secret key client-side), a non-issue at this scale on the 25GB free tier.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
