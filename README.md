@@ -6,6 +6,11 @@
 ![OCR](https://img.shields.io/badge/OCR-Tesseract.js-blueviolet)
 ![Last commit](https://img.shields.io/github/last-commit/ma67-ex/receipt-vault)
 ![Repo size](https://img.shields.io/github/repo-size/ma67-ex/receipt-vault)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+[![ReceiptVault sign-in screen](docs/screenshot.png)](https://receipt-vault-seven.vercel.app)
+
+**[Live demo](https://receipt-vault-seven.vercel.app)**
 
 Photograph a receipt and the app reads the **store, amount and date** for you, stores the **photo and its data** in the cloud, and shows your **monthly and yearly spending**. Export everything as CSV at tax season.
 
@@ -163,3 +168,7 @@ npm start        # serve the production build on :5173
 - Client config keys in `lib/config.js` are meant to be public. Security comes from the Firestore rules above.
 - The All receipts tab renders 50 rows at a time with a "Show more" button. Receipts are still loaded into memory as one live query, which is fine at family scale. For thousands of receipts, add Firestore pagination (`limit` + `startAfter`), which needs a composite index on `uid` + `date`.
 - Deleting a receipt also deletes its Cloudinary image when `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` are set as server environment variables (for example in Vercel). The secret stays on the server: `/api/delete-receipt` uses the signed-in user's own token, so the Firestore rules still decide who may delete. Without those variables, or while offline, only the Firestore record is removed and the image stays stored.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
