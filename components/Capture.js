@@ -153,7 +153,7 @@ export default function Capture({ uid, onSaved }) {
       {ocr && <div className="ocr-status"><span className="spinner" /> {ocr}</div>}
 
       {showForm && read && !read.complete && (
-        <p className="hint">Some of this could not be read well, which usually means a blurry, dark or crumpled photo. Check every field, or retake it flat and in good light.</p>
+        <p className="hint">Some details were not found or could not be read, for example when there is no tax line, or the photo is blurry or dark. Check each field before saving.</p>
       )}
       {showForm && read && read.tax !== "" && (
         <p className="hint">
