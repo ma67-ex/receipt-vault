@@ -104,6 +104,10 @@ export default function Capture({ uid, onSaved }) {
 
       {ocr && <div className="ocr-status"><span className="spinner" /> {ocr}</div>}
 
+      {showForm && read && !read.complete && (
+        <p className="hint">Some of this could not be read well, which usually means a blurry, dark or crumpled photo. Check every field, or retake it flat and in good light.</p>
+      )}
+
       {showForm && read && (read.time || read.payment || read.tax !== "" || read.subtotal !== "") && (
         <p className="hint">
           Also read:{" "}
