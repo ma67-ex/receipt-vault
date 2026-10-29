@@ -15,9 +15,9 @@ export default function Export({ receipts }) {
 
   const exportCsv = () => {
     if (!receipts.length) { toast("Nothing to export yet."); return; }
-    const head = ["Date", "Brand", "Category", "Amount", "ImageURL"];
+    const head = ["Date", "Time", "Brand", "Category", "Currency", "Amount", "BeforeTax", "Tax", "PaidBy", "ImageURL"];
     const rows = receipts.map((r) =>
-      [r.date, r.brand, r.category, r.amount, r.imgUrl]
+      [r.date, r.time, r.brand, r.category, r.currency, r.amount, r.subtotal, r.tax, r.payment, r.imgUrl]
         .map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","));
     download("receipts.csv", [head.join(","), ...rows].join("\n"), "text/csv");
   };
