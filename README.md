@@ -161,5 +161,5 @@ npm start        # serve the production build on :5173
 - OCR accuracy on crumpled or faded receipts is about 70 to 85 percent, which is why every field stays editable before save.
 - Free tier: 50k Firestore reads per day, 25GB Cloudinary storage, well beyond a family's use.
 - Client config keys in `lib/config.js` are meant to be public. Security comes from the Firestore rules above.
-- The receipt list loads a user's whole collection into memory (fine at family scale). For thousands of receipts, add Firestore pagination (`limit` + `startAfter`).
-- Deleting a receipt removes its Firestore record; the Cloudinary image stays stored (unsigned uploads cannot be deleted without exposing a secret key client-side), a non-issue at this scale on the 25GB free tier.
+- The All receipts tab renders 50 rows at a time with a "Show more" button. Receipts are still loaded into memory as one live query, which is fine at family scale. For thousands of receipts, add Firestore pagination (`limit` + `startAfter`), which needs a composite index on `uid` + `date`.
+- Deleting a receipt also deletes its Cloudinary image when `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` are set as server environment variables (for example in Vercel). The secret stays on the server: `/api/delete-receipt` uses the signed-in user's own token, so the Firestore rules still decide who may delete. Without those variables, or while offline, only the Firestore record is removed and the image stays stored.

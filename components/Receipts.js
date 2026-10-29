@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase";
 import { CATEGORIES, money, safeImageUrl } from "@/lib/receipt";
 import { useToast } from "./Toast";
 
@@ -34,11 +34,14 @@ function ReceiptsSkeleton() {
   );
 }
 
+const PAGE = 50;
+
 export default function Receipts({ receipts, loading = false }) {
   const toast = useToast();
   const [term, setTerm] = useState("");
   const [cat, setCat] = useState("");
   const [modal, setModal] = useState("");
+  const [shown, setShown] = useState(PAGE);
 
   const filtered = receipts.filter(
     (r) =>
@@ -46,12 +49,25 @@ export default function Receipts({ receipts, loading = false }) {
       (!cat || r.category === cat)
   );
 
-  // Note: only removes the Firestore record. The Cloudinary image (unsigned
-  // upload, no secret key in the browser) stays stored — fine at family scale.
+  // Server route deletes the record and the Cloudinary image (secret stays on
+  // the server). If it is unconfigured, offline or fails, fall back to removing
+  // just the record, which Firestore queues offline.
   const remove = async (id) => {
     if (!confirm("Delete this receipt permanently?")) return;
-    try { await deleteDoc(doc(db, "receipts", id)); toast("Deleted"); }
-    catch (err) { toast("Delete failed: " + err.message); }
+    try {
+      let ok = false;
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const res = await fetch("/api/delete-receipt", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
+        ok = res.ok;
+      } catch {}
+      if (!ok) await deleteDoc(doc(db, "receipts", id));
+      toast("Deleted");
+    } catch (err) { toast("Delete failed: " + err.message); }
   };
 
   if (loading) return <ReceiptsSkeleton />;
@@ -76,7 +92,7 @@ export default function Receipts({ receipts, loading = false }) {
           <span></span>
         </div>
         <div className="ledger-body">
-          {filtered.map((r) => {
+          {filtered.slice(0, shown).map((r) => {
             const src = safeImageUrl(r.imgUrl);
             return (
               <div className="row" key={r.id}>
@@ -95,6 +111,11 @@ export default function Receipts({ receipts, loading = false }) {
           })}
         </div>
       </div>
+      {filtered.length > shown && (
+        <button className="ghost-btn" onClick={() => setShown((n) => n + PAGE)}>
+          Show more ({filtered.length - shown} left)
+        </button>
+      )}
       {receipts.length === 0 && (
         <p className="empty-state">Nothing here yet. Add your first receipt from the Add receipt tab.</p>
       )}
