@@ -461,3 +461,6 @@ h1,h2,h3{font-family:var(--serif); font-weight:600; letter-spacing:.2px; color:v
 .lang-row{display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; margin:.6rem 0 1rem}
 .edit-form{background:var(--paper, #fff); padding:1.4rem; border-radius:14px; max-width:460px; width:100%; max-height:92vh; overflow:auto; box-shadow:var(--shadow)}
 .edit-form h3{margin:0 0 .8rem}
+
+/* an image is being dragged over the Add receipt tab */
+.tab.dragging .capture-drop{border-color:var(--ink); background:var(--bg-2); outline:2px dashed var(--ink); outline-offset:4px}

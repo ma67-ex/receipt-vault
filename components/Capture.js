@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { CATEGORIES, CURRENCIES, compressImage, guessCategory, todayStr } from "@/lib/receipt";
 import { readReceipt } from "@/lib/ocr";
 import { saveReceipt, isOffline } from "@/lib/save";
@@ -28,10 +28,13 @@ export default function Capture({ uid, onSaved }) {
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const text = (v) => (v === "" || v == null ? "" : String(v));
 
-  const onFile = async (e) => {
-    const file = e.target.files[0];
+  // One path for the file picker, drag and drop, and paste.
+  const handleFile = async (file) => {
     if (!file) return;
-    const compressed = await compressImage(file);
+    if (!file.type.startsWith("image/")) { toast("That is not an image. Drop or paste a photo of the receipt."); return; }
+    let compressed;
+    try { compressed = await compressImage(file); }
+    catch { toast("This browser cannot open that image. HEIC photos from an iPhone may need to be shared as JPEG."); return; }
     setBlob(compressed);
     setPreview(URL.createObjectURL(compressed));
     setOcr("Reading the receipt…");
@@ -51,6 +54,32 @@ export default function Capture({ uid, onSaved }) {
       setOcr("");
       setShowForm(true);
     }
+  };
+
+  const onFile = (e) => handleFile(e.target.files[0]);
+
+  // Paste an image from the clipboard (a screenshot, or "Copy image" from a browser or email).
+  const handleFileRef = useRef(handleFile);
+  handleFileRef.current = handleFile;
+  useEffect(() => {
+    const onPaste = (e) => {
+      const item = [...(e.clipboardData?.items || [])].find((i) => i.kind === "file" && i.type.startsWith("image/"));
+      if (!item) return; // plain text pastes into the form fields as usual
+      e.preventDefault();
+      handleFileRef.current(item.getAsFile());
+    };
+    document.addEventListener("paste", onPaste);
+    return () => document.removeEventListener("paste", onPaste);
+  }, []);
+
+  // Drag and drop anywhere on this tab; without a handler the browser would open the dropped file instead.
+  const [dragging, setDragging] = useState(false);
+  const hasFiles = (e) => [...(e.dataTransfer?.types || [])].includes("Files");
+  const dnd = {
+    onDragEnter: (e) => { if (hasFiles(e)) { e.preventDefault(); setDragging(true); } },
+    onDragOver: (e) => { if (hasFiles(e)) e.preventDefault(); },
+    onDragLeave: (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDragging(false); },
+    onDrop: (e) => { if (!hasFiles(e)) return; e.preventDefault(); setDragging(false); handleFile(e.dataTransfer.files[0]); },
   };
 
   const reset = () => {
@@ -89,10 +118,10 @@ export default function Capture({ uid, onSaved }) {
   };
 
   return (
-    <div className="tab active">
+    <div className={`tab active${dragging ? " dragging" : ""}`} {...dnd}>
       <h2>Add a receipt</h2>
       <p className="hint">
-        Take a photo with your back camera, or choose an image you already have. The store,
+        Take a photo with your back camera, choose an image you already have, drag one onto this page, or paste one with Ctrl+V (Cmd+V on a Mac). The store,
         amount and date are read for you. Look them over, correct anything that came out wrong, then save.
       </p>
       <label className="lang-row">Receipt language
@@ -111,7 +140,7 @@ export default function Capture({ uid, onSaved }) {
         {!preview && (
           <div id="dropInner">
             <div className="drop-frame">+</div>
-            <span>Snap a new receipt or pick one from your photos</span>
+            <span>Snap a new receipt, pick one, or drop or paste an image here</span>
             <div className="capture-actions">
               <button type="button" className="primary-btn" onClick={() => cameraRef.current?.click()}>Take a photo</button>
               <button type="button" className="ghost-btn" onClick={() => galleryRef.current?.click()}>Choose from gallery</button>
