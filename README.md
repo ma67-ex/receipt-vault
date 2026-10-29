@@ -163,7 +163,7 @@ npm start        # serve the production build on :5173
 - **Bundled dependencies:** Chart.js, Tesseract.js and the Firebase SDK are now installed via npm and bundled by Next, not pulled from a CDN at runtime, so the old Subresource-Integrity concern for `<script>` CDN tags no longer applies. Keep versions pinned and run `npm audit` periodically.
 
 ## Notes and limits
-- OCR accuracy on crumpled or faded receipts is about 70 to 85 percent, which is why every field stays editable before save.
+- Reading a receipt crops to the paper, boosts contrast, and runs up to three OCR passes in the browser, keeping the pass where subtotal plus tax equals the total. Besides store, amount and date it also reads time, pre-tax amount, tax and payment method; those four are shown as a hint under the photo but are not saved, because the Firestore rules only allow the original fields. Checked on five public receipt photos (clear, blurred, dark and low-resolution versions of each): flat, well-lit receipts read fully, and light blur still reads. Heavy blur, low-resolution dark photos, and crumpled or tilted receipts often fail, so every field stays editable before save.
 - Free tier: 50k Firestore reads per day, 25GB Cloudinary storage, well beyond a family's use.
 - Client config keys in `lib/config.js` are meant to be public. Security comes from the Firestore rules above.
 - The All receipts tab renders 50 rows at a time with a "Show more" button. Receipts are still loaded into memory as one live query, which is fine at family scale. For thousands of receipts, add Firestore pagination (`limit` + `startAfter`), which needs a composite index on `uid` + `date`.

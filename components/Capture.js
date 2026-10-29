@@ -3,7 +3,8 @@ import { useState, useRef } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { uploadToCloudinary } from "@/lib/cloudinary";
-import { CATEGORIES, compressImage, parseReceipt, guessCategory, todayStr } from "@/lib/receipt";
+import { CATEGORIES, compressImage, guessCategory, money, todayStr } from "@/lib/receipt";
+import { readReceipt } from "@/lib/ocr";
 import { useToast } from "./Toast";
 
 export default function Capture({ uid, onSaved }) {
@@ -12,7 +13,8 @@ export default function Capture({ uid, onSaved }) {
   const galleryRef = useRef(null);
   const [preview, setPreview] = useState("");
   const [blob, setBlob] = useState(null);
-  const [ocr, setOcr] = useState(false);
+  const [ocr, setOcr] = useState("");
+  const [read, setRead] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ brand: "", category: "Other", amount: "", date: todayStr() });
@@ -25,24 +27,24 @@ export default function Capture({ uid, onSaved }) {
     const compressed = await compressImage(file);
     setBlob(compressed);
     setPreview(URL.createObjectURL(compressed));
-    setOcr(true);
+    setOcr("Reading the receipt…");
+    setRead(null);
     setShowForm(false);
     try {
-      const Tesseract = (await import("tesseract.js")).default;
-      const { data } = await Tesseract.recognize(compressed, "eng");
-      const p = parseReceipt(data.text);
+      const p = await readReceipt(file, (n, of) => setOcr(n > 1 ? `Reading again, pass ${n} of ${of}…` : "Reading the receipt…"));
+      setRead(p);
       setForm({ brand: p.brand || "", category: guessCategory(p.brand), amount: p.amount || "", date: p.date || todayStr() });
     } catch {
       toast("Could not read the receipt. Please fill the fields in yourself.");
       setForm({ brand: "", category: "Other", amount: "", date: todayStr() });
     } finally {
-      setOcr(false);
+      setOcr("");
       setShowForm(true);
     }
   };
 
   const reset = () => {
-    setBlob(null); setPreview(""); setShowForm(false);
+    setBlob(null); setPreview(""); setShowForm(false); setRead(null);
     if (cameraRef.current) cameraRef.current.value = "";
     if (galleryRef.current) galleryRef.current.value = "";
   };
@@ -100,7 +102,20 @@ export default function Capture({ uid, onSaved }) {
         {preview && <img src={preview} className="preview-img" alt="receipt preview" />}
       </div>
 
-      {ocr && <div className="ocr-status"><span className="spinner" /> Reading the receipt…</div>}
+      {ocr && <div className="ocr-status"><span className="spinner" /> {ocr}</div>}
+
+      {showForm && read && (read.time || read.payment || read.tax !== "" || read.subtotal !== "") && (
+        <p className="hint">
+          Also read:{" "}
+          {[
+            read.time && `time ${read.time}`,
+            read.subtotal !== "" && `before tax ${money(read.subtotal)}${read.derived.includes("subtotal") ? " (worked out)" : ""}`,
+            read.tax !== "" && `tax ${money(read.tax)}${read.derived.includes("tax") ? " (worked out)" : ""}`,
+            read.payment && `paid by ${read.payment}`,
+          ].filter(Boolean).join(", ")}
+          . {read.consistent ? "The amounts add up." : "The amounts do not add up, so check the total."}
+        </p>
+      )}
 
       {showForm && (
         <form className="receipt-form" onSubmit={save}>
