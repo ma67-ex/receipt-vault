@@ -1,11 +1,16 @@
 "use client";
-import { useState, useRef } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { uploadToCloudinary } from "@/lib/cloudinary";
-import { CATEGORIES, compressImage, guessCategory, money, todayStr } from "@/lib/receipt";
+import { useState, useRef, useEffect } from "react";
+import { CATEGORIES, CURRENCIES, compressImage, guessCategory, todayStr } from "@/lib/receipt";
 import { readReceipt } from "@/lib/ocr";
+import { saveReceipt, isOffline } from "@/lib/save";
+import { enqueue } from "@/lib/queue";
 import { useToast } from "./Toast";
+
+const LANGUAGES = [["eng", "English"], ["deu", "German"], ["fra", "French"], ["spa", "Spanish"], ["ita", "Italian"], ["por", "Portuguese"], ["pol", "Polish"], ["nld", "Dutch"]];
+
+const stored = (key, fallback) => { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } };
+const store = (key, value) => { try { localStorage.setItem(key, value); } catch {} };
+const blank = () => ({ brand: "", category: "Other", amount: "", date: todayStr(), currency: stored("rv-currency", "USD"), time: "", subtotal: "", tax: "", payment: "" });
 
 export default function Capture({ uid, onSaved }) {
   const toast = useToast();
@@ -17,30 +22,64 @@ export default function Capture({ uid, onSaved }) {
   const [read, setRead] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ brand: "", category: "Other", amount: "", date: todayStr() });
+  const [lang, setLang] = useState(() => stored("rv-lang", "eng"));
+  const [form, setForm] = useState(blank);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const text = (v) => (v === "" || v == null ? "" : String(v));
 
-  const onFile = async (e) => {
-    const file = e.target.files[0];
+  // One path for the file picker, drag and drop, and paste.
+  const handleFile = async (file) => {
     if (!file) return;
-    const compressed = await compressImage(file);
+    if (!file.type.startsWith("image/")) { toast("That is not an image. Drop or paste a photo of the receipt."); return; }
+    let compressed;
+    try { compressed = await compressImage(file); }
+    catch { toast("This browser cannot open that image. HEIC photos from an iPhone may need to be shared as JPEG."); return; }
     setBlob(compressed);
     setPreview(URL.createObjectURL(compressed));
     setOcr("Reading the receipt…");
     setRead(null);
     setShowForm(false);
     try {
-      const p = await readReceipt(file, (n, of) => setOcr(n > 1 ? `Reading again, pass ${n} of ${of}…` : "Reading the receipt…"));
+      const p = await readReceipt(file, (n, of) => setOcr(n > 1 ? `Reading again, pass ${n} of ${of}…` : "Reading the receipt…"), lang);
       setRead(p);
-      setForm({ brand: p.brand || "", category: guessCategory(p.brand), amount: p.amount || "", date: p.date || todayStr() });
+      setForm({
+        ...blank(), brand: p.brand || "", category: guessCategory(p.brand), amount: p.amount || "", date: p.date || todayStr(),
+        currency: p.currency || stored("rv-currency", "USD"), time: p.time, subtotal: text(p.subtotal), tax: text(p.tax), payment: p.payment,
+      });
     } catch {
       toast("Could not read the receipt. Please fill the fields in yourself.");
-      setForm({ brand: "", category: "Other", amount: "", date: todayStr() });
+      setForm(blank());
     } finally {
       setOcr("");
       setShowForm(true);
     }
+  };
+
+  const onFile = (e) => handleFile(e.target.files[0]);
+
+  // Paste an image from the clipboard (a screenshot, or "Copy image" from a browser or email).
+  const handleFileRef = useRef(handleFile);
+  handleFileRef.current = handleFile;
+  useEffect(() => {
+    const onPaste = (e) => {
+      const item = [...(e.clipboardData?.items || [])].find((i) => i.kind === "file" && i.type.startsWith("image/"));
+      if (!item) return; // plain text pastes into the form fields as usual
+      e.preventDefault();
+      handleFileRef.current(item.getAsFile());
+    };
+    document.addEventListener("paste", onPaste);
+    return () => document.removeEventListener("paste", onPaste);
+  }, []);
+
+  // Drag and drop anywhere on this tab; without a handler the browser would open the dropped file instead.
+  const [dragging, setDragging] = useState(false);
+  const hasFiles = (e) => [...(e.dataTransfer?.types || [])].includes("Files");
+  const dnd = {
+    onDragEnter: (e) => { if (hasFiles(e)) { e.preventDefault(); setDragging(true); } },
+    onDragOver: (e) => { if (hasFiles(e)) e.preventDefault(); },
+    onDragLeave: (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDragging(false); },
+    onDrop: (e) => { if (!hasFiles(e)) return; e.preventDefault(); setDragging(false); handleFile(e.dataTransfer.files[0]); },
   };
 
   const reset = () => {
@@ -49,39 +88,48 @@ export default function Capture({ uid, onSaved }) {
     if (galleryRef.current) galleryRef.current.value = "";
   };
 
+  const changeLang = (v) => { setLang(v); store("rv-lang", v); };
+
   const save = async (e) => {
     e.preventDefault();
     if (!blob) { toast("Add a photo first."); return; }
     setSaving(true);
     try {
-      const imgUrl = await uploadToCloudinary(blob);
-      await addDoc(collection(db, "receipts"), {
-        uid,
-        brand: form.brand.trim(),
-        category: form.category,
-        amount: parseFloat(form.amount) || 0,
-        date: form.date,
-        imgUrl,
-        createdAt: serverTimestamp(),
-      });
-      toast("Receipt saved.");
+      const r = await saveReceipt(uid, blob, form);
+      store("rv-currency", form.currency);
+      toast(r.extras ? "Receipt saved." : "Receipt saved without the extra details. Update the Firestore rules to keep them.");
       reset();
       onSaved?.();
     } catch (err) {
-      console.error("Save failed:", err);
-      toast("Save failed: " + err.message);
+      if (isOffline(err)) {
+        try {
+          await enqueue({ uid, blob, form });
+          toast("No connection. The receipt is kept on this device and uploads when you are back online.");
+          reset();
+          onSaved?.();
+        } catch { toast("Save failed: no connection and this browser cannot keep it for later."); }
+      } else {
+        console.error("Save failed:", err);
+        toast("Save failed: " + err.message);
+      }
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="tab active">
+    <div className={`tab active${dragging ? " dragging" : ""}`} {...dnd}>
       <h2>Add a receipt</h2>
       <p className="hint">
-        Take a photo with your back camera, or choose an image you already have. The store,
+        Take a photo with your back camera, choose an image you already have, drag one onto this page, or paste one with Ctrl+V (Cmd+V on a Mac). The store,
         amount and date are read for you. Look them over, correct anything that came out wrong, then save.
       </p>
+      <label className="lang-row">Receipt language
+        <select value={lang} onChange={(e) => changeLang(e.target.value)}>
+          {LANGUAGES.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
+        </select>
+        {lang !== "eng" && <span className="hint">Downloads the language once, then works offline.</span>}
+      </label>
 
       <div className="capture-drop">
         {/* camera input forces the back camera on phones; gallery input (no
@@ -92,7 +140,7 @@ export default function Capture({ uid, onSaved }) {
         {!preview && (
           <div id="dropInner">
             <div className="drop-frame">+</div>
-            <span>Snap a new receipt or pick one from your photos</span>
+            <span>Snap a new receipt, pick one, or drop or paste an image here</span>
             <div className="capture-actions">
               <button type="button" className="primary-btn" onClick={() => cameraRef.current?.click()}>Take a photo</button>
               <button type="button" className="ghost-btn" onClick={() => galleryRef.current?.click()}>Choose from gallery</button>
@@ -105,19 +153,13 @@ export default function Capture({ uid, onSaved }) {
       {ocr && <div className="ocr-status"><span className="spinner" /> {ocr}</div>}
 
       {showForm && read && !read.complete && (
-        <p className="hint">Some of this could not be read well, which usually means a blurry, dark or crumpled photo. Check every field, or retake it flat and in good light.</p>
+        <p className="hint">Some details were not found or could not be read, for example when there is no tax line, or the photo is blurry or dark. Check each field before saving.</p>
       )}
-
-      {showForm && read && (read.time || read.payment || read.tax !== "" || read.subtotal !== "") && (
+      {showForm && read && read.tax !== "" && (
         <p className="hint">
-          Also read:{" "}
-          {[
-            read.time && `time ${read.time}`,
-            read.subtotal !== "" && `before tax ${money(read.subtotal)}${read.derived.includes("subtotal") ? " (worked out)" : ""}`,
-            read.tax !== "" && `tax ${money(read.tax)}${read.derived.includes("tax") ? " (worked out)" : ""}`,
-            read.payment && `paid by ${read.payment}`,
-          ].filter(Boolean).join(", ")}
-          . {read.consistent ? "The amounts add up." : "The amounts do not add up, so check the total."}
+          {read.derived.includes("subtotal") && "Before tax was worked out from the total. "}
+          {read.derived.includes("total") && "The total was worked out from before tax plus tax. "}
+          {read.consistent ? "The amounts add up." : "The amounts could not be checked against each other, so check the total."}
         </p>
       )}
 
@@ -131,11 +173,28 @@ export default function Capture({ uid, onSaved }) {
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </label>
-          <label>Amount ($)
+          <label>Currency
+            <select value={form.currency} onChange={(e) => set("currency", e.target.value)}>
+              {[...new Set([form.currency, ...CURRENCIES])].map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </label>
+          <label>Total
             <input type="number" step="0.01" min="0" value={form.amount} onChange={(e) => set("amount", e.target.value)} placeholder="0.00" required />
+          </label>
+          <label>Before tax
+            <input type="number" step="0.01" min="0" value={form.subtotal} onChange={(e) => set("subtotal", e.target.value)} placeholder="optional" />
+          </label>
+          <label>Tax
+            <input type="number" step="0.01" min="0" value={form.tax} onChange={(e) => set("tax", e.target.value)} placeholder="optional" />
           </label>
           <label>Date
             <input type="date" value={form.date} onChange={(e) => set("date", e.target.value)} required />
+          </label>
+          <label>Time
+            <input type="time" value={form.time} onChange={(e) => set("time", e.target.value)} />
+          </label>
+          <label>Paid by
+            <input type="text" maxLength={20} value={form.payment} onChange={(e) => set("payment", e.target.value)} placeholder="e.g. Visa, Cash" />
           </label>
           <div className="form-actions">
             <button type="button" className="ghost-btn" onClick={reset}>Cancel</button>

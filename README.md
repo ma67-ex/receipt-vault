@@ -85,12 +85,31 @@ Free tier: 25GB storage plus bandwidth, well beyond family use.
 
 ### 4. Paste Firestore security rules (so each user only touches their own data)
 
-In **Firestore → Rules**. These bind every document to its owner and validate the shape and size of each field on create. Documents are immutable (no `update` rule), so validation only runs at creation:
+In **Firestore → Rules**. These bind every document to its owner and validate the shape and size of each field. Owners can read, edit and delete their own receipts; the owner, image and creation time can never be changed. The optional fields (`currency`, `time`, `subtotal`, `tax`, `payment`) are what let the app store the extra details it reads, and editing a saved receipt also needs the `update` rule below. The app still saves with the older, shorter rules: it retries without the extra fields and tells you.
+
+These rules were written without a Firestore emulator, so after pasting them run a few checks in the console's **Rules Playground** (add a receipt with and without the optional fields, edit your own, try to edit someone else's) before relying on them.
 ```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /receipts/{id} {
+      function valid(d) {
+        return d.keys().hasOnly(['uid','brand','category','amount','date','imgUrl','createdAt',
+                                 'currency','time','subtotal','tax','payment'])
+          && d.keys().hasAll(['uid','brand','category','amount','date','imgUrl','createdAt'])
+          && d.brand is string && d.brand.size() <= 100
+          && d.category is string && d.category.size() <= 50
+          && d.amount is number && d.amount >= 0 && d.amount <= 1000000
+          && d.date is string && d.date.size() <= 10
+          && d.imgUrl is string && d.imgUrl.size() <= 500
+          && d.imgUrl.matches('https://res(-[a-z0-9]+)?[.]cloudinary[.]com/.*')
+          && (!('currency' in d) || (d.currency is string && d.currency.size() == 3))
+          && (!('time' in d) || (d.time is string && d.time.size() <= 5))
+          && (!('subtotal' in d) || (d.subtotal is number && d.subtotal >= 0 && d.subtotal <= 1000000))
+          && (!('tax' in d) || (d.tax is number && d.tax >= 0 && d.tax <= 1000000))
+          && (!('payment' in d) || (d.payment is string && d.payment.size() <= 20));
+      }
+
       // Read and delete only your own receipts.
       allow read, delete: if request.auth != null
         && resource.data.uid == request.auth.uid;
@@ -98,24 +117,16 @@ service cloud.firestore {
       // Create only a well-formed receipt owned by the signed-in user.
       allow create: if request.auth != null
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.keys().hasOnly(
-             ['uid','brand','category','amount','date','imgUrl','createdAt'])
-        && request.resource.data.brand is string
-        && request.resource.data.brand.size() <= 100
-        && request.resource.data.category is string
-        && request.resource.data.category.size() <= 50
-        && request.resource.data.amount is number
-        && request.resource.data.amount >= 0
-        && request.resource.data.amount <= 1000000
-        && request.resource.data.date is string
-        && request.resource.data.date.size() <= 10
-        && request.resource.data.imgUrl is string
-        && request.resource.data.imgUrl.size() <= 500
-        && request.resource.data.imgUrl.matches('https://res(-[a-z0-9]+)?[.]cloudinary[.]com/.*')
+        && valid(request.resource.data)
         && request.resource.data.createdAt == request.time;
 
-      // Documents are immutable once written.
-      allow update: if false;
+      // Edit your own receipt. The owner, image and creation time never change.
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.imgUrl == resource.data.imgUrl
+        && request.resource.data.createdAt == resource.data.createdAt
+        && valid(request.resource.data);
     }
   }
 }
@@ -163,7 +174,12 @@ npm start        # serve the production build on :5173
 - **Bundled dependencies:** Chart.js, Tesseract.js and the Firebase SDK are now installed via npm and bundled by Next, not pulled from a CDN at runtime, so the old Subresource-Integrity concern for `<script>` CDN tags no longer applies. Keep versions pinned and run `npm audit` periodically.
 
 ## Notes and limits
-- Reading a receipt crops to the paper, boosts contrast, and runs up to five OCR passes in the browser: plain, grayscale, deblurred, and upscaled with sharpening. It stops once two passes agree on the date and total, then merges the passes field by field, trusting the total most passes read. Besides store, amount and date it reads time, pre-tax amount, tax and payment method; those four are shown as a hint under the photo but are not saved, because the Firestore rules only allow the original fields. A read where subtotal plus tax does not match the total shows a warning to check every field. Checked on five public receipt photos in clear, blurred, dark and low-resolution versions: flat, well-lit receipts read fully and mild blur usually still reads. Heavy blur, dark low-resolution photos and crumpled or tilted receipts often fail, so every field stays editable before save. A slow phone can take 5 to 10 seconds on a hard photo.
+- Reading a receipt crops to the paper, boosts contrast, and runs up to five OCR passes in the browser: plain, grayscale, deblurred, and upscaled with sharpening. It stops once two passes agree on the date and total, then merges the passes field by field, trusting the total most passes read. It reads store, total, date, time, currency, pre-tax amount, tax and payment method, and the form shows all of them for you to correct. A read where subtotal plus tax does not match the total shows a warning. Pick the receipt language before taking the photo (English, German, French, Spanish, Italian, Portuguese, Polish, Dutch); a language downloads once on first use. Checked on five public receipt photos in clear, blurred, dark and low-resolution versions: flat, well-lit receipts read fully and mild blur usually still reads. Heavy blur, dark low-resolution photos and crumpled or tilted receipts often fail, so every field stays editable. A slow phone can take 5 to 10 seconds on a hard photo.
+- Add a receipt by taking a photo, choosing a file, dragging an image onto the Add receipt tab, or pasting one with Ctrl+V (Cmd+V on a Mac). A file that is not an image, or an image the browser cannot open (such as HEIC from an iPhone), gets a message instead of failing silently.
+- Receipts keep their currency. Amounts in different currencies cannot be added, so the dashboard totals and charts use your most-used currency and list the others. Export includes every field.
+- Saved receipts can be edited and deleted. Without the updated Firestore rules above, extra details are skipped on save with a notice, and editing is refused with a notice.
+- No connection: a receipt captured offline waits in the browser (IndexedDB) and uploads when you are back online. Clearing site data before then loses it.
+- Uploads are signed by `/api/sign-upload` into a per-user Cloudinary folder when `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` are set; otherwise they use the unsigned preset. Once signed uploads work, turn the unsigned preset off in Cloudinary so nobody else can upload with it.
 - Free tier: 50k Firestore reads per day, 25GB Cloudinary storage, well beyond a family's use.
 - Client config keys in `lib/config.js` are meant to be public. Security comes from the Firestore rules above.
 - The All receipts tab renders 50 rows at a time with a "Show more" button. Receipts are still loaded into memory as one live query, which is fine at family scale. For thousands of receipts, add Firestore pagination (`limit` + `startAfter`), which needs a composite index on `uid` + `date`.

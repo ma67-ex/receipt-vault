@@ -36,7 +36,17 @@ function DashboardSkeleton() {
   );
 }
 
-export default function Dashboard({ receipts, loading = false }) {
+// Amounts in different currencies cannot be added, so the dashboard totals the most-used currency
+// and lists the others.
+function splitByCurrency(receipts) {
+  const counts = {};
+  receipts.forEach((r) => { const c = r.currency || "USD"; counts[c] = (counts[c] || 0) + 1; });
+  const main = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || "USD";
+  return { main, inMain: receipts.filter((r) => (r.currency || "USD") === main), others: Object.entries(counts).filter(([c]) => c !== main) };
+}
+
+export default function Dashboard({ receipts: allReceipts, loading = false }) {
+  const receipts = allReceipts;
   const monthlyRef = useRef(null);
   const categoryRef = useRef(null);
   const monthlyChart = useRef(null);
@@ -46,14 +56,16 @@ export default function Dashboard({ receipts, loading = false }) {
   const now = new Date();
   const ym = now.toISOString().slice(0, 7);
   const y = String(now.getFullYear());
+  const { main, inMain, others } = splitByCurrency(receipts);
   let mSum = 0, ySum = 0;
-  receipts.forEach((r) => {
+  inMain.forEach((r) => {
     if ((r.date || "").startsWith(ym)) mSum += r.amount;
     if ((r.date || "").startsWith(y)) ySum += r.amount;
   });
 
   useEffect(() => {
     const gridColor = "#e3dfd6", tick = "#8b897f";
+    const receipts = splitByCurrency(allReceipts).inMain;
     // quiet monochrome ramp (charcoal → warm grey) to match the minimal theme
     const palette = ["#1b1b1a", "#3f3d39", "#5c5a54", "#78756d", "#948f85",
       "#aca79b", "#c2bcae", "#d2ccbe", "#8b897f", "#4c4a46", "#6b6860"];
@@ -98,7 +110,7 @@ export default function Dashboard({ receipts, loading = false }) {
       monthlyChart.current?.destroy();
       categoryChart.current?.destroy();
     };
-  }, [receipts]);
+  }, [allReceipts]);
 
   if (loading) return <DashboardSkeleton />;
 
@@ -107,10 +119,13 @@ export default function Dashboard({ receipts, loading = false }) {
       <h2>Dashboard</h2>
       <p className="section-lead">A running view of what you have spent and saved.</p>
       <div className="figures">
-        <div className="fig"><span className="fig-k">This month</span><span className="fig-v">{money(mSum)}</span></div>
-        <div className="fig"><span className="fig-k">This year</span><span className="fig-v">{money(ySum)}</span></div>
+        <div className="fig"><span className="fig-k">This month</span><span className="fig-v">{money(mSum, main)}</span></div>
+        <div className="fig"><span className="fig-k">This year</span><span className="fig-v">{money(ySum, main)}</span></div>
         <div className="fig"><span className="fig-k">Receipts saved</span><span className="fig-v">{receipts.length}</span></div>
       </div>
+      {others.length > 0 && (
+        <p className="hint">Totals and charts show {main}. Not included: {others.map(([c, n]) => `${n} in ${c}`).join(", ")}.</p>
+      )}
       <div className="charts">
         <section className="chart">
           <h3>Monthly spend</h3>
