@@ -26,10 +26,11 @@ export default function ConsentBanner() {
       <div className="consent-text">
         <b>A note on cookies</b>
         <p>
-          Receipt Vault uses a small number of cookies. The essential ones keep you
-          signed in through Google and cannot be turned off. You can accept everything,
-          or keep it to the essentials only. See our <a href="/cookies.html">Cookie Policy</a> for
-          the full list, or our <a href="/privacy.html">Privacy Policy</a> for the full picture.
+          Essential cookies keep you signed in. <span className="consent-long">You can accept everything,
+          or keep it to the essentials only.</span>{" "}
+          <a href="/cookies.html" target="_blank" rel="noopener noreferrer">Cookie Policy</a>
+          {" · "}
+          <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         </p>
       </div>
       <div className="consent-actions">
