@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /receipts/{id} {
+      function valid(d) {
+        return d.keys().hasOnly(['uid','brand','category','amount','date','imgUrl','createdAt',
+                                 'currency','time','subtotal','tax','payment'])
+          && d.keys().hasAll(['uid','brand','category','amount','date','imgUrl','createdAt'])
+          && d.brand is string && d.brand.size() <= 100
+          && d.category is string && d.category.size() <= 50
+          && d.amount is number && d.amount >= 0 && d.amount <= 1000000
+          && d.date is string && d.date.size() <= 10
+          && d.imgUrl is string && d.imgUrl.size() <= 500
+          // Only images delivered from our own Cloudinary account (cloud name xulzdnnc).
+          && d.imgUrl.matches('https://res(-[a-z0-9]+)?[.]cloudinary[.]com/xulzdnnc/image/upload/.*')
+          && (!('currency' in d) || (d.currency is string && d.currency.size() == 3))
+          && (!('time' in d) || (d.time is string && d.time.size() <= 5))
+          && (!('subtotal' in d) || (d.subtotal is number && d.subtotal >= 0 && d.subtotal <= 1000000))
+          && (!('tax' in d) || (d.tax is number && d.tax >= 0 && d.tax <= 1000000))
+          && (!('payment' in d) || (d.payment is string && d.payment.size() <= 20));
+      }
+
+      // Read and delete only your own receipts.
+      allow read, delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+
+      // Create only a well-formed receipt owned by the signed-in user.
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && valid(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+
+      // Edit your own receipt. The owner, image and creation time never change.
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.imgUrl == resource.data.imgUrl
+        && request.resource.data.createdAt == resource.data.createdAt
+        && valid(request.resource.data);
+    }
+  }
+}

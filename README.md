@@ -85,7 +85,7 @@ Free tier: 25GB storage plus bandwidth, well beyond family use.
 
 ### 4. Paste Firestore security rules (so each user only touches their own data)
 
-In **Firestore → Rules**. These bind every document to its owner and validate the shape and size of each field. Owners can read, edit and delete their own receipts; the owner, image and creation time can never be changed. The optional fields (`currency`, `time`, `subtotal`, `tax`, `payment`) are what let the app store the extra details it reads, and editing a saved receipt also needs the `update` rule below. The app still saves with the older, shorter rules: it retries without the extra fields and tells you.
+In **Firestore → Rules**, or deploy the committed copy with `firebase deploy --only firestore:rules` (the rules live in `firestore.rules`, wired up by `firebase.json`). These bind every document to its owner and validate the shape and size of each field, and only accept image URLs from this app's own Cloudinary account. Owners can read, edit and delete their own receipts; the owner, image and creation time can never be changed. The optional fields (`currency`, `time`, `subtotal`, `tax`, `payment`) are what let the app store the extra details it reads, and editing a saved receipt also needs the `update` rule below. The app still saves with the older, shorter rules: it retries without the extra fields and tells you.
 
 These rules were written without a Firestore emulator, so after pasting them run a few checks in the console's **Rules Playground** (add a receipt with and without the optional fields, edit your own, try to edit someone else's) before relying on them.
 ```
@@ -102,7 +102,8 @@ service cloud.firestore {
           && d.amount is number && d.amount >= 0 && d.amount <= 1000000
           && d.date is string && d.date.size() <= 10
           && d.imgUrl is string && d.imgUrl.size() <= 500
-          && d.imgUrl.matches('https://res(-[a-z0-9]+)?[.]cloudinary[.]com/.*')
+          // Only images delivered from our own Cloudinary account (cloud name xulzdnnc).
+          && d.imgUrl.matches('https://res(-[a-z0-9]+)?[.]cloudinary[.]com/xulzdnnc/image/upload/.*')
           && (!('currency' in d) || (d.currency is string && d.currency.size() == 3))
           && (!('time' in d) || (d.time is string && d.time.size() <= 5))
           && (!('subtotal' in d) || (d.subtotal is number && d.subtotal >= 0 && d.subtotal <= 1000000))
