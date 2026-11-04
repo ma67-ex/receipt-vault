@@ -180,6 +180,7 @@ npm start        # serve the production build on :5173
 - Receipts keep their currency. Amounts in different currencies cannot be added, so the dashboard totals and charts use your most-used currency and list the others. Export includes every field.
 - Saved receipts can be edited and deleted. Without the updated Firestore rules above, extra details are skipped on save with a notice, and editing is refused with a notice.
 - No connection: a receipt captured offline waits in the browser (IndexedDB) and uploads when you are back online. Clearing site data before then loses it.
+- Both API routes are rate limited per signed-in user and per IP (`lib/rate-limit.js`, in memory per serverless instance; move to Vercel Firewall rules or Upstash if real abuse appears) and reject oversized or malformed bodies.
 - Uploads are signed by `/api/sign-upload` into a per-user Cloudinary folder when `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` are set. Without them the app refuses to upload, unless `NEXT_PUBLIC_ALLOW_UNSIGNED_UPLOAD=1` is set for local development, in which case the public unsigned preset is used. Turn that preset off in the Cloudinary dashboard (Settings → Upload → Upload presets) so nobody else can upload with it; the deployed app no longer needs it.
 - Free tier: 50k Firestore reads per day, 25GB Cloudinary storage, well beyond a family's use.
 - Client config keys in `lib/config.js` are meant to be public. Security comes from the Firestore rules above.
