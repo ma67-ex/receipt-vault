@@ -11,7 +11,7 @@
     "test": "node --test lib/*.test.mjs"
   },
   "dependencies": {
-    "chart.js": "^4.4.3",
+    "chart.js": "^4.6.1",
     "firebase": "^13.2.0",
     "next": "^16.4.5",
     "react": "^19.3.1",
